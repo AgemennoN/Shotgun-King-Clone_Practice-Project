@@ -30,7 +30,12 @@ public class BoardTile : MonoBehaviour {
     private float tileSize;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
+    private PlayerManager playerManager;
     public ChessPiece pieceOnIt; // TO DO: Should it be public? Or is there a better option to be more OOP
+
+    private void Start() {
+        playerManager = PlayerManager.Instance;
+    }
 
     public ChessPiece GetPiece() => pieceOnIt;
 
@@ -47,6 +52,25 @@ public class BoardTile : MonoBehaviour {
 
     public Vector2Int GetPosition() {
         return new Vector2Int(positionX, positionY);
+    }
+
+    void OnMouseDown() {
+        if (playerManager.playerTurn) {
+            if (playerManager.playerAvailableMoves.Contains(this)) {
+                playerManager.playerPiece.SetPosition(this);
+            }
+        }
+    }
+
+    void OnMouseEnter() {
+        if (playerManager.playerTurn) {
+            if (playerManager.playerAvailableMoves.Contains(this)){
+                spriteRenderer.color = Color.yellow; // PlaceHolder visual effect
+            }
+        }
+    }
+    void OnMouseExit() {
+        spriteRenderer.color = Color.white;
     }
 
     private void CreateSprite(Sprite sprite) {
