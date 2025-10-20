@@ -21,6 +21,9 @@ public class BoardManager : MonoBehaviour {
     }
 
     void Start() {
+    }
+
+    public void Initialize() {
         GenerateBoard(tileSize, 8, 8);
     }
 

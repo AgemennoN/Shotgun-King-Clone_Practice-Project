@@ -9,17 +9,27 @@ public class ChessPiece : MonoBehaviour {
     public void SetPosition(BoardTile tile) {
         if (currentTile != null) {
             currentTile.SetPiece(null); // Remove from old tile
-            //StopAllCoroutines(); // Stop previous movement if any
-            StartCoroutine(MoveToPosition(tile.transform.position, 0.3f));
-        } else {
-            transform.position = tile.transform.position;
         }
+        transform.position = tile.transform.position;
         currentTile = tile;
         tile.SetPiece(this); // Update new tile  
         // TO DO: Might use event that listens when a piece is placed on a Tile to be More OOP maybe?
     }
 
-    private IEnumerator MoveToPosition(Vector3 targetPos, float duration) {
+    public void MoveToPosition(BoardTile tile) {
+        if (currentTile != null) {
+            currentTile.SetPiece(null); // Remove from old tile
+            //StopAllCoroutines(); // Stop previous movement if any
+            StartCoroutine(MoveToPositionPhysically(tile.transform.position, 0.3f));
+        } else {
+            transform.position = tile.transform.position;
+        }
+        currentTile = tile;
+        tile.SetPiece(this); // Update new tile  
+    }
+
+
+    private IEnumerator MoveToPositionPhysically(Vector3 targetPos, float duration) {
         Vector3 startPos = transform.position;
         float time = 0f;
 

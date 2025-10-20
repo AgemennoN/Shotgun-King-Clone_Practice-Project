@@ -57,7 +57,7 @@ public class BoardTile : MonoBehaviour {
     void OnMouseDown() {
         if (playerManager.playerTurn) {
             if (playerManager.playerAvailableMoves.Contains(this)) {
-                playerManager.playerPiece.SetPosition(this);
+                playerManager.playerPiece.MoveToPosition(this);
             }
         }
     }

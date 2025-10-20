@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
     private EnemyManager enemyManager;
     private PlayerManager playerManager;
+    private BoardManager boardManager;
     private int roundNumber;
 
     private void Awake() {
@@ -20,12 +21,18 @@ public class GameManager : MonoBehaviour {
 
     private void Start() {
         Initialize();
+
         StartGame();
     }
 
     public void Initialize() {
+        boardManager = BoardManager.Instance;
+        boardManager.Initialize();
         enemyManager = EnemyManager.Instance;
+        enemyManager.Initialize();
         playerManager = PlayerManager.Instance;
+        playerManager.Initialize();
+
         roundNumber = 0;
     }
 

@@ -20,7 +20,7 @@ public class PlayerManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Start() {
+    public void Initialize() {
         board = BoardManager.Instance.GetBoard();
     }
 

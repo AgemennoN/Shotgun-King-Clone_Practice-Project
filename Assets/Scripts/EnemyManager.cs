@@ -8,6 +8,7 @@ public class EnemyManager : MonoBehaviour {
     public Dictionary<EnemyPiece, int> enemyDict;
     private PieceFactory pieceFactory; 
     private BoardManager boardManager;
+    private BoardTile[,] board;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -19,10 +20,10 @@ public class EnemyManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Start() {
+    public void Initialize() {
         pieceFactory = PieceFactory.Instance;
         boardManager = BoardManager.Instance;
-
+        board = boardManager.GetBoard();
         InitEnemyDict();
     }
 
@@ -41,7 +42,6 @@ public class EnemyManager : MonoBehaviour {
         if (!enemyDictToCreate.ContainsKey(EnemyType.King)) {
             throw new ArgumentException("The dictionary must contain a King enemy.");
         }
-        BoardTile[,] board = boardManager.GetBoard();
 
         float startCol = 3.5f;
         Queue<EnemyType> placementQueue = CreateSpawnQueue();
