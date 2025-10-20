@@ -55,22 +55,28 @@ public class BoardTile : MonoBehaviour {
     }
 
     void OnMouseDown() {
-        if (playerManager.playerTurn) {
-            if (playerManager.playerAvailableMoves.Contains(this)) {
-                playerManager.playerPiece.MoveToPosition(this);
-            }
+        if (TurnManager.Instance.IsPlayerTurn() && playerManager.IsActionAvailable()) {
+            playerManager.OnTileClicked(this);
+            HighlightTile(false);
         }
     }
 
     void OnMouseEnter() {
-        if (playerManager.playerTurn) {
+        if (TurnManager.Instance.IsPlayerTurn()) {
             if (playerManager.playerAvailableMoves.Contains(this)){
-                spriteRenderer.color = Color.yellow; // PlaceHolder visual effect
+                HighlightTile(true); // PlaceHolder visual effect
             }
         }
     }
     void OnMouseExit() {
-        spriteRenderer.color = Color.white;
+        if (TurnManager.Instance.IsPlayerTurn()) {
+            HighlightTile(false);
+        }
+    }
+
+    private void HighlightTile(bool highlight) {
+        spriteRenderer.color = highlight ? Color.yellow : Color.white;
+        // TO DO: Should be an arrow from playerpiece to the tile's direction to indicate movement
     }
 
     private void CreateSprite(Sprite sprite) {

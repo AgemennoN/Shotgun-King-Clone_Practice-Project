@@ -6,9 +6,11 @@ public class PlayerManager : MonoBehaviour {
     public static PlayerManager Instance { get; private set; }
     [SerializeField] private GameObject playerPrefab;
     public PlayerPiece playerPiece; // TO DO Should be private to be more OOP
-    private BoardTile[,] board;
     public List<BoardTile> playerAvailableMoves;
-    public bool playerTurn;
+    private BoardTile[,] board;
+    private TurnManager turnManager;
+    private bool actionAvailable;
+    private bool isActionPhaseActive;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -22,6 +24,7 @@ public class PlayerManager : MonoBehaviour {
 
     public void Initialize() {
         board = BoardManager.Instance.GetBoard();
+        turnManager = TurnManager.Instance;
     }
 
     public void SpawnPlayer() {
@@ -36,12 +39,31 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public void PlayerTurnStart() {
-        playerTurn = true;
         playerAvailableMoves = playerPiece.GetAvailableMoves(board);
         // Maybe Also get safeMoves(not threatened)
+        actionAvailable = true;
+        isActionPhaseActive = false;
+    }
+
+    public void OnTileClicked(BoardTile tile) {
+        if (playerAvailableMoves.Contains(tile) && !isActionPhaseActive) {
+            actionAvailable = false;
+            isActionPhaseActive = true; // Start action phase
+            playerPiece.MoveToPosition(tile, OnActionPhaseComplete); // Pass callback
+        }
+    }
+
+    private void OnActionPhaseComplete() {
+        isActionPhaseActive = false; // End action phase
+        EndTurn();
+    }
+
+
+    public bool IsActionAvailable() {
+        return actionAvailable;
     }
 
     private void EndTurn() {
-        playerTurn = false;
+        turnManager.EndPlayerTurn();
     }
 }

@@ -8,6 +8,7 @@ public class EnemyManager : MonoBehaviour {
     public Dictionary<EnemyPiece, int> enemyDict;
     private PieceFactory pieceFactory; 
     private BoardManager boardManager;
+    private TurnManager turnManager;
     private BoardTile[,] board;
 
     private void Awake() {
@@ -23,6 +24,8 @@ public class EnemyManager : MonoBehaviour {
     public void Initialize() {
         pieceFactory = PieceFactory.Instance;
         boardManager = BoardManager.Instance;
+        turnManager = TurnManager.Instance;
+
         board = boardManager.GetBoard();
         InitEnemyDict();
     }
@@ -95,6 +98,14 @@ public class EnemyManager : MonoBehaviour {
             }
         }
         return queue;
+    }
+
+    public void StartEnemyTurn() {
+        //TO DO: Each enemy piece should to An action
+        EndTurn();
+    }
+    private void EndTurn() {
+        turnManager.EndEnemyTurn();
     }
 
 }

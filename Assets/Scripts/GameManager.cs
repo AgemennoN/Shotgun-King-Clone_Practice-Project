@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour {
     private EnemyManager enemyManager;
     private PlayerManager playerManager;
     private BoardManager boardManager;
-    private int roundNumber;
+    private TurnManager turnManager;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -26,20 +26,21 @@ public class GameManager : MonoBehaviour {
     }
 
     public void Initialize() {
+        turnManager = TurnManager.Instance;
+        turnManager.Initialize();
         boardManager = BoardManager.Instance;
         boardManager.Initialize();
         enemyManager = EnemyManager.Instance;
         enemyManager.Initialize();
         playerManager = PlayerManager.Instance;
         playerManager.Initialize();
-
-        roundNumber = 0;
     }
 
     public void StartGame() {
         playerManager.SpawnPlayer();
         enemyManager.SpawnEnemies();
-        playerManager.PlayerTurnStart();
+        
+        turnManager.StartPlayerTurn();
     }
 
 }
