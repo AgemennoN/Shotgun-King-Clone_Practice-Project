@@ -25,6 +25,10 @@ public class TurnManager : MonoBehaviour {
         roundNumber = 0;
     }
 
+    public void GameStart() {
+        EnemyManager.Instance.StartEnemyTurn();
+    }
+
     public void StartPlayerTurn() {
         roundNumber++;
         Debug.Log("roundNumber: " + roundNumber);

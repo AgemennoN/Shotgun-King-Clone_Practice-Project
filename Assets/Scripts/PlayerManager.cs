@@ -28,7 +28,7 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public void SpawnPlayer() {
-        GameObject obj = Instantiate(playerPrefab);
+        GameObject obj = Instantiate(playerPrefab, transform);
         playerPiece = obj.GetComponent<PlayerPiece>();
         if (playerPiece == null) {
             Debug.LogError("Prefab does not contain a ChessPiece component.");

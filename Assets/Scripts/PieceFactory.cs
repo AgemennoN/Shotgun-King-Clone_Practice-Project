@@ -19,27 +19,28 @@ public class PieceFactory : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
-    public void CreatePieceOnBoard(BoardTile[,] board, EnemyType enemyType, int x, int y) {
+    public GameObject CreatePieceOnBoard(BoardTile[,] board, EnemyType enemyType, int x, int y, Transform parent) {
         // x is column, y is row
         if (board[x, y].GetPiece() != null) {
             Debug.LogWarning($"board[{x},{y}] already has a piece.");
-            return;
+            return null;
         }
 
         GameObject prefab = GetPrefabForEnemyType(enemyType);
         if (prefab == null) {
             Debug.LogError($"No prefab found for enemy type: {enemyType}");
-            return;
+            return null;
         }
 
-        GameObject obj = Instantiate(prefab);
+        GameObject obj = Instantiate(prefab,parent.transform);
         ChessPiece piece = obj.GetComponent<ChessPiece>();
         if (piece == null) {
             Debug.LogError("Prefab does not contain a ChessPiece component.");
             Destroy(obj);
-            return;
+            return null;
         }
         piece.SetPosition(board[x,y]);
+        return obj;
     }
 
     private GameObject GetPrefabForEnemyType(EnemyType enemyType) {

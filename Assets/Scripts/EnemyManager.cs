@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
     private Dictionary<EnemyType, int> enemyDictToCreate;
-    public Dictionary<EnemyPiece, int> enemyDict;
+    public Dictionary<EnemyType, List<GameObject>> enemyDict;
+
     private PieceFactory pieceFactory; 
     private BoardManager boardManager;
     private TurnManager turnManager;
@@ -39,6 +40,15 @@ public class EnemyManager : MonoBehaviour {
         enemyDictToCreate.Add(EnemyType.Bishop, 1);
         enemyDictToCreate.Add(EnemyType.Knight, 1);
         enemyDictToCreate.Add(EnemyType.Pawn, 4);
+
+
+        enemyDict = new Dictionary<EnemyType, List<GameObject>>();
+        foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType))) {
+            enemyDict[type] = new List<GameObject>();
+        }
+
+
+
     }
 
     public void SpawnEnemies() {
@@ -66,10 +76,14 @@ public class EnemyManager : MonoBehaviour {
                             continue;
 
                         nextPieceType = placementQueue.Dequeue();
-                        pieceFactory.CreatePieceOnBoard(board, nextPieceType, col, row);
+                        GameObject newPiece = pieceFactory.CreatePieceOnBoard(board, nextPieceType, col, row, transform);
 
-                        if (placementQueue.Count == 0)
+                        enemyDict[nextPieceType].Add(newPiece);
+
+                        if (placementQueue.Count == 0) {
+                            PrintEnemyDict();
                             return;
+                        }
                     }
                 }
 
@@ -102,10 +116,52 @@ public class EnemyManager : MonoBehaviour {
 
     public void StartEnemyTurn() {
         //TO DO: Each enemy piece should to An action
+        AllTakeAction();
         EndTurn();
     }
-    private void EndTurn() {
+
+    private void AllTakeAction() {
+        // Define the order manually
+        EnemyType[] executionOrder =
+        {
+            EnemyType.Pawn,
+            EnemyType.Knight,
+            EnemyType.Rook,
+            EnemyType.Queen,
+            EnemyType.Bishop,
+            EnemyType.King
+        };
+
+        // Iterate through the order and call TakeAction() on each
+        foreach (EnemyType type in executionOrder) {
+            if (!enemyDict.ContainsKey(type))
+                continue;
+
+            foreach (GameObject enemy in enemyDict[type]) {
+                if (enemy == null) continue;
+
+                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
+                if (piece != null)
+                    piece.TakeAction();
+                else
+                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
+            }
+        }
+    }
+
+
+private void EndTurn() {
         turnManager.EndEnemyTurn();
+    }
+
+    public void PrintEnemyDict() {
+        foreach (var kvp in enemyDict) {
+            string message = $"{kvp.Key}: ";
+            foreach (GameObject enemy in kvp.Value) {
+                message += enemy != null ? enemy.name + ", " : "null, ";
+            }
+            Debug.Log(message);
+        }
     }
 
 }

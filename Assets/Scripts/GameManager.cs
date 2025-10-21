@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
         playerManager.SpawnPlayer();
         enemyManager.SpawnEnemies();
         
-        turnManager.StartPlayerTurn();
+        turnManager.GameStart();
     }
 
 }
