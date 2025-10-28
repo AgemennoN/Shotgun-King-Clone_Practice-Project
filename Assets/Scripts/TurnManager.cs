@@ -1,14 +1,14 @@
+using System;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour {
     public static TurnManager Instance { get; private set; }
 
-    private enum TurnState {
-        PlayerTurn,
-        EnemyTurn
-    }
+    public event Action OnPlayerTurnStarted;
+    public event Action OnEnemyTurnStarted;
 
-    private TurnState currentTurn;
+    private enum TurnState { None, PlayerTurn, EnemyTurn }
+    private TurnState currentTurn = TurnState.None;
     private int roundNumber;
 
     private void Awake() {
@@ -16,7 +16,6 @@ public class TurnManager : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -26,30 +25,30 @@ public class TurnManager : MonoBehaviour {
     }
 
     public void GameStart() {
-        EnemyManager.Instance.StartEnemyTurn();
+        Debug.Log("Game started, beginning enemy turn...");
+        StartEnemyTurn();
     }
 
-    public void StartPlayerTurn() {
+    private void StartPlayerTurn() {
         roundNumber++;
-        Debug.Log("roundNumber: " + roundNumber);
         currentTurn = TurnState.PlayerTurn;
-        PlayerManager.Instance.PlayerTurnStart();
+        Debug.Log($"--- Round {roundNumber}: Player Turn ---");
+        OnPlayerTurnStarted?.Invoke();
     }
 
-    public void EndPlayerTurn() {
+    private void StartEnemyTurn() {
         currentTurn = TurnState.EnemyTurn;
-        EnemyManager.Instance.StartEnemyTurn();
+        Debug.Log($"--- Round {roundNumber}: Enemy Turn ---");
+        OnEnemyTurnStarted?.Invoke();
     }
 
-    public void EndEnemyTurn() {
-        StartPlayerTurn();
+    public void EndTurn() {
+        if (currentTurn == TurnState.PlayerTurn)
+            StartEnemyTurn();
+        else
+            StartPlayerTurn();
     }
 
-    public bool IsPlayerTurn() {
-        return currentTurn == TurnState.PlayerTurn;
-    }
-
-    public bool IsEnemyTurn() {
-        return currentTurn == TurnState.EnemyTurn;
-    }
+    public bool IsPlayerTurn() => currentTurn == TurnState.PlayerTurn;
+    public bool IsEnemyTurn() => currentTurn == TurnState.EnemyTurn;
 }

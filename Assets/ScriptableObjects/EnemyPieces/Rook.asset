@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e5f043bb608c94f9e82fc3c900597f, type: 3}
   m_Name: Rook
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTypeSO
-  enemyType: 4
-  maxHealth: 5
-  speed: 3
+  enemyType: 0
+  maxHealth: 4
+  speed: 4

@@ -12,7 +12,7 @@ public class EnemyPiece : ChessPiece {
     protected int currenHealth;
     protected int speed; // Max cooldownToMove
     protected int cooldownToMove;
-    protected bool readyToMove;
+    protected bool readyToMove = false;
 
     protected List<BoardTile> availableTiles;
     protected BoardTile[,] board;
@@ -24,7 +24,6 @@ public class EnemyPiece : ChessPiece {
             currenHealth = maxHealth;
             speed = enemyTypeSO.speed;
             cooldownToMove = UnityEngine.Random.Range(2, speed + 1);
-            readyToMove = false;
 
             //enemyType = enemyTypeSO.enemyType; TO DO Not using right now
         }
@@ -44,12 +43,12 @@ public class EnemyPiece : ChessPiece {
             if (availableTiles.Count != 0) {
                 if (cooldownToMove == 1 && readyToMove == false) {
                     GetReadyToMove();
-                } else {
+                } else { // Stop Shaking and MOVE
                     StopReadyingToMove();
                     MoveToPosition(DecideMovementTile(availableTiles));
-                    cooldownToMove = speed;
+                    cooldownToMove = speed; // Reset Cooldown
                     Debug.Log($"GameObject {gameObject.name} Taking Action maxHealth: {maxHealth}, speed: {speed}");
-                    //MOVE and Stop Shaking
+                    
                 }
             } else { // No Available Movement
                 if (readyToMove == true) {

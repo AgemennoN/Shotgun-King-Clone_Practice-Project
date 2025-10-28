@@ -4,13 +4,16 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour {
 
     public static PlayerManager Instance { get; private set; }
+
     [SerializeField] private GameObject playerPrefab;
     public PlayerPiece playerPiece; // TO DO Should be private to be more OOP
     public List<BoardTile> playerAvailableMoves;
     private BoardTile[,] board;
-    private TurnManager turnManager;
+
     private bool actionAvailable;
     private bool isActionPhaseActive;
+    private TurnManager turnManager;
+
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -25,6 +28,8 @@ public class PlayerManager : MonoBehaviour {
     public void Initialize() {
         board = BoardManager.Instance.GetBoard();
         turnManager = TurnManager.Instance;
+
+        turnManager.OnPlayerTurnStarted += StartPlayerTurn;
     }
 
     public void SpawnPlayer() {
@@ -38,7 +43,7 @@ public class PlayerManager : MonoBehaviour {
         playerPiece.SetPosition(board[3, 0]);
     }
 
-    public void PlayerTurnStart() {
+    public void StartPlayerTurn() {
         playerAvailableMoves = playerPiece.GetAvailableMoves(board);
         // Maybe Also get safeMoves(not threatened)
         actionAvailable = true;
@@ -64,6 +69,6 @@ public class PlayerManager : MonoBehaviour {
     }
 
     private void EndTurn() {
-        turnManager.EndPlayerTurn();
+        turnManager.EndTurn();
     }
 }

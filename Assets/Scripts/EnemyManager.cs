@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
+
     private Dictionary<EnemyType, int> enemyDictToCreate;
     public Dictionary<EnemyType, List<GameObject>> enemyDict;
 
     private PieceFactory pieceFactory; 
     private BoardManager boardManager;
-    private TurnManager turnManager;
     private BoardTile[,] board;
+    private TurnManager turnManager;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -27,8 +28,45 @@ public class EnemyManager : MonoBehaviour {
         boardManager = BoardManager.Instance;
         turnManager = TurnManager.Instance;
 
+        turnManager.OnEnemyTurnStarted += StartEnemyTurn;
+
         board = boardManager.GetBoard();
         InitEnemyDict();
+    }
+
+    public void StartEnemyTurn() {
+        //TO DO: Each enemy piece should to An action
+        AllTakeAction();
+        EndTurn();
+    }
+
+    private void AllTakeAction() {
+        // Define the order manually
+        EnemyType[] executionOrder =
+        {
+            EnemyType.Pawn,
+            EnemyType.Knight,
+            EnemyType.Rook,
+            EnemyType.Queen,
+            EnemyType.Bishop,
+            EnemyType.King
+        };
+
+        // Iterate through the order and call TakeAction() on each
+        foreach (EnemyType type in executionOrder) {
+            if (!enemyDict.ContainsKey(type))
+                continue;
+
+            foreach (GameObject enemy in enemyDict[type]) {
+                if (enemy == null) continue;
+
+                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
+                if (piece != null)
+                    piece.TakeAction();
+                else
+                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
+            }
+        }
     }
 
     private void InitEnemyDict() {
@@ -46,9 +84,6 @@ public class EnemyManager : MonoBehaviour {
         foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType))) {
             enemyDict[type] = new List<GameObject>();
         }
-
-
-
     }
 
     public void SpawnEnemies() {
@@ -91,6 +126,7 @@ public class EnemyManager : MonoBehaviour {
             }
         }
     }
+
     private Queue<EnemyType> CreateSpawnQueue() {
         var queue = new Queue<EnemyType>();
 
@@ -114,44 +150,8 @@ public class EnemyManager : MonoBehaviour {
         return queue;
     }
 
-    public void StartEnemyTurn() {
-        //TO DO: Each enemy piece should to An action
-        AllTakeAction();
-        EndTurn();
-    }
-
-    private void AllTakeAction() {
-        // Define the order manually
-        EnemyType[] executionOrder =
-        {
-            EnemyType.Pawn,
-            EnemyType.Knight,
-            EnemyType.Rook,
-            EnemyType.Queen,
-            EnemyType.Bishop,
-            EnemyType.King
-        };
-
-        // Iterate through the order and call TakeAction() on each
-        foreach (EnemyType type in executionOrder) {
-            if (!enemyDict.ContainsKey(type))
-                continue;
-
-            foreach (GameObject enemy in enemyDict[type]) {
-                if (enemy == null) continue;
-
-                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
-                if (piece != null)
-                    piece.TakeAction();
-                else
-                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
-            }
-        }
-    }
-
-
     private void EndTurn() {
-        turnManager.EndEnemyTurn();
+        turnManager.EndTurn();
     }
 
     public void PrintEnemyDict() {
