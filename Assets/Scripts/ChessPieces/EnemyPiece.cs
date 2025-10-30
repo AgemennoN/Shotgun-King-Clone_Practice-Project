@@ -8,11 +8,11 @@ using static UnityEngine.EventSystems.EventTrigger;
 public class EnemyPiece : ChessPiece {
     [SerializeField] protected EnemyTypeSO enemyTypeSO;
     //protected EnemyType enemyType;   TO DO: Not using right now
-    protected int maxHealth;
-    protected int currenHealth;
-    protected int speed; // Max cooldownToMove
-    protected int cooldownToMove;
-    protected bool readyToMove = false;
+    [SerializeField] protected int maxHealth;
+    [SerializeField] protected int currenHealth;
+    [SerializeField] protected int speed; // Max cooldownToMove
+    [SerializeField] protected int cooldownToMove;
+    [SerializeField] protected bool readyToMove = false;
 
     protected List<BoardTile> availableTiles;
     protected BoardTile[,] board;
@@ -80,6 +80,17 @@ public class EnemyPiece : ChessPiece {
         } else {
             return null;
         }
+    }
+
+    public void TakeDamage(int amount) {
+        currenHealth -= amount;
+        if (currenHealth <= 0) {
+            Die();
+        }
+    }
+    private void Die() {
+        // play death animation
+        Destroy(gameObject);
     }
 
 }

@@ -9,7 +9,7 @@ public class BoardInputBroadcaster : MonoBehaviour
 
     // --- Events ---
     public event Action<BoardTile> OnTileHovered;
-    public event Action<BoardTile> OnTileClicked;
+    public event Action<BoardTile, Vector3> OnTileClicked;
 
     private BoardTile currentHoveredTile;
     private Vector3 lastMousePosition;
@@ -45,7 +45,10 @@ public class BoardInputBroadcaster : MonoBehaviour
 
     private void CheckTileClick() {
         if (currentHoveredTile != null) {
-            OnTileClicked?.Invoke(currentHoveredTile); // Broadcast click
+            Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log($"Clicked v3: {mouseWorldPos}");
+
+            OnTileClicked?.Invoke(currentHoveredTile, mouseWorldPos); // Broadcast click
         }
     }
 }

@@ -43,32 +43,44 @@ public class PlayerManager : MonoBehaviour {
         if (!TurnManager.Instance.IsPlayerTurn())
             return;
 
-        if (tile != null && playerAvailableMoves.Contains(tile)) {
-            Vector3 from = playerPiece.GetTile().transform.position;
-            Vector3 to = tile.transform.position;
-            arrowIndicator.Show(from, to);
-            //weapon.Aim(false);
-        } else {
+        if (tile != null)
+            if (playerAvailableMoves.Contains(tile)) {
+                Vector3 from = playerPiece.GetTile().transform.position;
+                Vector3 to = tile.transform.position;
+                arrowIndicator.Show(from, to);
+                //weapon.Aim(false);
+            } else {
+                arrowIndicator.Hide();
+                //weapon.Aim(true);
+            }
+        else {
             arrowIndicator.Hide();
-            //weapon.Aim(true);
+            //weapon.Aim(false);
         }
     }
 
-    private void HandleTileClick(BoardTile tile) {
+    private void HandleTileClick(BoardTile tile, Vector3 mouseWorldPos) {
         if (!TurnManager.Instance.IsPlayerTurn() || !IsActionAvailable())
             return;
 
-        if (tile != null && playerAvailableMoves.Contains(tile)) {
-            OnTileClicked(tile);
-            arrowIndicator.Hide();
+        if (tile != null) {
+            if (playerAvailableMoves.Contains(tile)) {
+                MakeKingMovementTo(tile);
+                arrowIndicator.Hide();
+            } else if (tile != playerPiece.GetTile()) {
+                Debug.Log("pm: SHOOOOOT");
+                weapon.Shoot(playerPiece.transform.position, mouseWorldPos);
+            }
         }
     }
 
-    private void OnTileClicked(BoardTile tile) {
-        if (playerAvailableMoves.Contains(tile) && !isActionPhaseActive) {
-            actionAvailable = false;
-            isActionPhaseActive = true; // Start action phase
-            playerPiece.MoveToPosition(tile, OnActionPhaseComplete); // Pass callback
+    private void MakeKingMovementTo(BoardTile tile) {
+        if (!isActionPhaseActive) {
+            if (playerAvailableMoves.Contains(tile)) {
+                actionAvailable = false;
+                isActionPhaseActive = true; // Start action phase
+                playerPiece.MoveToPosition(tile, OnActionPhaseComplete); // Pass callback
+            }
         }
     }
 
