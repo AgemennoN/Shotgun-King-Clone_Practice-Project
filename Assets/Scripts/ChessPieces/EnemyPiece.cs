@@ -11,7 +11,7 @@ public class EnemyPiece : ChessPiece {
     [SerializeField] protected int cooldownToMove;
     [SerializeField] protected bool readyToMove = false;
 
-    protected List<BoardTile> availableTiles;
+    [SerializeField] protected List<BoardTile> availableTiles;
 
     public System.Action<EnemyPiece> OnDeath;
 
@@ -59,6 +59,79 @@ public class EnemyPiece : ChessPiece {
     private void StopReadyingToMove() { // Stop shaking
         readyToMove = false;
         // Stop shaking animation
+    }
+    
+    public override List<BoardTile> GetAvailableMoves(BoardTile[,] board) {
+        List<BoardTile> availableTiles = new List<BoardTile>();
+
+        Vector2Int currentPos = currentTile.GridPosition;
+
+        foreach (var pattern in enemyTypeSO.movementPatterns) {
+            switch (pattern.movementType) {
+                case MovementType.Jump:
+                    HandleJumpMove(board, currentPos, pattern, availableTiles);
+                    break;
+
+                case MovementType.FiniteStep:
+                    HandleFiniteStepMove(board, currentPos, pattern, availableTiles);
+                    break;
+
+                case MovementType.InfiniteStep:
+                    HandleInfiniteStepMove(board, currentPos, pattern, availableTiles);
+                    break;
+            }
+        }
+
+        return availableTiles;
+    }
+
+    private void HandleJumpMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles) {
+        Vector2Int targetPos = currentPos + pattern.direction;
+
+        if (!BoardManager.IsInsideBounds(targetPos))
+            return;
+
+        BoardTile targetTile = board[targetPos.x, targetPos.y];
+        if (targetTile.GetPiece() == null)
+            availableTiles.Add(targetTile);
+    }
+
+    private void HandleFiniteStepMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles) {
+        for (int step = 1; step <= pattern.maxDistance; step++) {
+            Vector2Int targetPos = currentPos + pattern.direction * step;
+
+            if (!BoardManager.IsInsideBounds(targetPos))
+                break;
+
+            BoardTile targetTile = board[targetPos.x, targetPos.y];
+            var piece = targetTile.GetPiece();
+
+            if (piece == null) {
+                availableTiles.Add(targetTile);
+            } else {
+                // Stop if blocked by another piece
+                break;
+            }
+        }
+    }
+
+    private void HandleInfiniteStepMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles) {
+        for (int step = 1; ; step++) {
+            Vector2Int targetPos = currentPos + pattern.direction * step;
+
+            if (!BoardManager.IsInsideBounds(targetPos))
+                break;
+
+            BoardTile targetTile = board[targetPos.x, targetPos.y];
+            var piece = targetTile.GetPiece();
+
+            if (piece == null) {
+                availableTiles.Add(targetTile);
+            } else {
+                // Stop if blocked by another piece
+                break;
+            }
+        }
     }
 
     protected virtual BoardTile DecideMovementTile(List<BoardTile> availableTiles) {

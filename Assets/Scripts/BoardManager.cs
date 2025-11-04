@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour {
@@ -58,6 +59,11 @@ public class BoardManager : MonoBehaviour {
                 if (tile != null)
                     Destroy(tile.gameObject);
         }
+    }
+
+    public static bool IsInsideBounds(Vector2Int pos) {
+        return pos.x >= 0 && pos.x < Board.GetLength(0) &&
+               pos.y >= 0 && pos.y < Board.GetLength(1);
     }
 
     public void PrintBoard() {

@@ -42,11 +42,11 @@ public class EnemyManager : MonoBehaviour {
         EnemyType[] executionOrder =
         {
             EnemyType.Pawn,
-            EnemyType.Knight,
-            EnemyType.Rook,
+            EnemyType.King,
             EnemyType.Queen,
             EnemyType.Bishop,
-            EnemyType.King
+            EnemyType.Rook,
+            EnemyType.Knight
         };
 
         // Iterate through the order and call TakeAction() on each
@@ -70,7 +70,7 @@ public class EnemyManager : MonoBehaviour {
         enemyDictToCreate = new Dictionary<EnemyType, int>();
 
         enemyDictToCreate.Add(EnemyType.King, 1);
-        enemyDictToCreate.Add(EnemyType.Queen, 0);
+        enemyDictToCreate.Add(EnemyType.Queen, 1);
         enemyDictToCreate.Add(EnemyType.Rook, 1);
         enemyDictToCreate.Add(EnemyType.Bishop, 1);
         enemyDictToCreate.Add(EnemyType.Knight, 1);

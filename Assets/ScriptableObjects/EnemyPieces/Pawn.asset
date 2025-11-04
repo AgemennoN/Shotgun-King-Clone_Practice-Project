@@ -15,3 +15,7 @@ MonoBehaviour:
   enemyType: 0
   maxHealth: 3
   speed: 5
+  movementPatterns:
+  - direction: {x: 0, y: -1}
+    movementType: 0
+    maxDistance: 1

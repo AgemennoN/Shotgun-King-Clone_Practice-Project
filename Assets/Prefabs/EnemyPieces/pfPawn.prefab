@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7738050101878433313}
-  - component: {fileID: 5983891908242532004}
   - component: {fileID: 8707883661898851906}
+  - component: {fileID: 5983891908242532004}
   m_Layer: 0
   m_Name: pfPawn
   m_TagString: Untagged
@@ -34,24 +34,6 @@ Transform:
   - {fileID: 3500913461901650638}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5983891908242532004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4699861740255049132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b0b381718aa32647beed8970e1cdbdd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Pawn
-  enemyTypeSO: {fileID: 11400000, guid: d8689c82cf9e88543a4fd0fd51e60ffc, type: 2}
-  maxHealth: 0
-  currenHealth: 0
-  speed: 0
-  cooldownToMove: 0
-  readyToMove: 0
 --- !u!61 &8707883661898851906
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -98,6 +80,22 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.55, y: 0.55}
   m_EdgeRadius: 0
+--- !u!114 &5983891908242532004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4699861740255049132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b0b381718aa32647beed8970e1cdbdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Pawn
+  enemyTypeSO: {fileID: 11400000, guid: d8689c82cf9e88543a4fd0fd51e60ffc, type: 2}
+  currenHealth: 0
+  cooldownToMove: 0
+  readyToMove: 0
 --- !u!1 &9127972954426716240
 GameObject:
   m_ObjectHideFlags: 0

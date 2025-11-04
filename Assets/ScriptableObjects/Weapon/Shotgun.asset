@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDataSO
   firePower: 4
-  fireRange: 3
-  fireArc: 45
-  bulletSpeed: 7
+  fireRange: 4
+  fireArc: 57
+  bulletSpeed: 20
   bulletDamage: 1
   magCapacity: 1
   maxReserveAmmo: 4
