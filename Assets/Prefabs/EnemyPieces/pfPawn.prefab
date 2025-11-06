@@ -92,10 +92,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0b381718aa32647beed8970e1cdbdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pawn
+  availableTiles: []
+  threatenedTiles: []
   enemyTypeSO: {fileID: 11400000, guid: d8689c82cf9e88543a4fd0fd51e60ffc, type: 2}
   currenHealth: 0
   cooldownToMove: 0
   readyToMove: 0
+  spriteRenderer: {fileID: 2352156946334107315}
 --- !u!1 &9127972954426716240
 GameObject:
   m_ObjectHideFlags: 0

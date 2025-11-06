@@ -92,10 +92,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f243b5832837746856f2d5c59de8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Rook
+  availableTiles: []
+  threatenedTiles: []
   enemyTypeSO: {fileID: 11400000, guid: 5f2d027fc73d68946ab4149cbf32d5f4, type: 2}
   currenHealth: 0
   cooldownToMove: 0
   readyToMove: 0
+  spriteRenderer: {fileID: 2352156946334107315}
 --- !u!1 &9127972954426716240
 GameObject:
   m_ObjectHideFlags: 0

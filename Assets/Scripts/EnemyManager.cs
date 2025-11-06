@@ -71,9 +71,10 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
-    public EnemyPiece IsTileInThreatened(BoardTile tile) {
+    public bool IsTileInThreatened(BoardTile tile, bool showThreat=false) {
         // Iterate through the order and call IsTileIsInThreatened() on each
         bool inThreat = false;
+
         foreach (EnemyType type in executionOrder) {
             if (!enemyDict.ContainsKey(type))
                 continue;
@@ -83,14 +84,13 @@ public class EnemyManager : MonoBehaviour {
 
                 EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
                 if (piece != null) {
-                    inThreat = piece.IsTileIsInThreatened(tile);
-                    if (inThreat) return piece; ;
+                    if (piece.IsTileIsInThreatened(tile, showThreat)) inThreat = true; ;
                 }
                 else
                     Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
             }
         }
-        return null;
+        return inThreat;
     }
 
     private bool IsEnemyKingAliveControl() {

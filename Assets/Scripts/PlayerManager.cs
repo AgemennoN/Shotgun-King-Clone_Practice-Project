@@ -17,6 +17,8 @@ public class PlayerManager : MonoBehaviour {
 
     private TurnManager turnManager;
 
+    private int shieldChargesLimit = 2;  // Number of times the player is protected from moving onto a threatened tile.
+    private int shieldChargesRemaining;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -63,7 +65,7 @@ public class PlayerManager : MonoBehaviour {
 
         if (tile != null) {
             if (playerAvailableMoves.Contains(tile)) {
-                if (IsTileSafe(tile)) {
+                if (IsActionApprovedByShieldProtection(tile)) {
                     arrowIndicator.Hide();
                     MakeKingMovementTo(tile);
                     weapon.Reload(); // Reload logic done inside weapon
@@ -72,7 +74,7 @@ public class PlayerManager : MonoBehaviour {
                     Debug.Log($"TILE: {tile} IS NOT SAFE to MOVE there");
                 }
             } else if (tile != playerPiece.GetTile()) {
-                if (IsTileSafe(GetPlayersTile())) {
+                if (IsActionApprovedByShieldProtection(GetPlayersTile())) {
                     if (weapon.Shoot(playerPiece.transform.position, mouseWorldPos)) {
                         StartCoroutine(TurnManager.Instance.StartActionPhase(true));    // When all the registered coroutines end, End Turn
                     }
@@ -106,19 +108,46 @@ public class PlayerManager : MonoBehaviour {
     private void StartPlayerTurn() {
         playerPiece.UpdateAvailableTiles(BoardManager.Board);
         playerAvailableMoves = playerPiece.GetAvailableTiles();
+        RestoreShieldCharges();
         // Maybe Also get safeMoves(not threatened)
     }
 
+    private bool IsActionApprovedByShieldProtection(BoardTile tile) {
+        if (shieldChargesRemaining > 0) { // Protected by shields
+            bool inThreat = EnemyManager.Instance.IsTileInThreatened(tile, true); // Shows threating pieces
+            if (inThreat == true) {
+                DecreaseShieldCharge();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private bool IsTileSafe(BoardTile tile) {
-        EnemyPiece enemyPiece = EnemyManager.Instance.IsTileInThreatened(tile);
-        return enemyPiece == null;
+        bool inThreat = EnemyManager.Instance.IsTileInThreatened(tile, true);
+        return !inThreat; // If in thread == True then it is NOT Safe
     }
 
     public BoardTile GetPlayersTile() {
         return playerPiece.GetTile();
     }
 
+    private void RestoreShieldCharges() {
+        // TO DO: There should be an UI to track this
+        shieldChargesRemaining = shieldChargesLimit;
+    }
+
+    private void DecreaseShieldCharge() {
+        // TO DO: There should be an UI to track this
+        shieldChargesRemaining--;
+    }
+
     private void EndTurn() {
         turnManager.EndPlayerTurn();
+    }
+
+    private void OnGUI() { // To Do: DEBUG Delete Later
+        GUI.Label(new Rect(10, 70, 300, 20), $"Shield: {shieldChargesRemaining}/{shieldChargesLimit}");
     }
 }

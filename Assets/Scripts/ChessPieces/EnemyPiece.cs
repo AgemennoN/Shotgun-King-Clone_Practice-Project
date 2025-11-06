@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,14 +13,23 @@ public class EnemyPiece : ChessPiece {
     [SerializeField] protected int cooldownToMove;
     [SerializeField] protected bool readyToMove = false;
 
+
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+
+
     public System.Action<EnemyPiece> OnDeath;
 
     private void Awake() {
         if (enemyTypeSO != null) {
             currenHealth = enemyTypeSO.maxHealth;
             cooldownToMove = UnityEngine.Random.Range(2, enemyTypeSO.speed + 1);
-
         }
+        
+        if (spriteRenderer == null) {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+        originalColor = spriteRenderer.color;
     }
 
     public void CheckControl() {
@@ -27,8 +38,17 @@ public class EnemyPiece : ChessPiece {
         IsTileIsInThreatened(PlayerManager.Instance.GetPlayersTile());
     }
 
-    public bool IsTileIsInThreatened(BoardTile tile) {
-        return threatenedTiles.Contains(tile);
+    public bool IsTileIsInThreatened(BoardTile tile, bool showThreat = false) {
+        bool inThreat = false;
+
+        if (threatenedTiles.Contains(tile)) {
+            inThreat = true;
+            if (showThreat) {
+                RedFlicker();
+            }
+        }
+
+        return inThreat;
     }
 
     public void TakeAction() {
@@ -183,6 +203,22 @@ public class EnemyPiece : ChessPiece {
         }
     }
     
+    public void RedFlicker() {
+        Color flickerColor = Color.red;
+        float flickerDuration = 0.1f;
+        int flickerCount = 3;
+        StartCoroutine(FlickerRoutine(flickerCount, flickerDuration, flickerColor));
+    }
+
+    private IEnumerator FlickerRoutine(int flickerCount, float flickerDuration, Color flickerColor) {
+        for (int i = 0; i < flickerCount; i++) {
+            spriteRenderer.color = flickerColor;
+            yield return new WaitForSeconds(flickerDuration);
+            spriteRenderer.color = originalColor;
+            yield return new WaitForSeconds(flickerDuration);
+        }
+    }
+
     private void Die() {
         // play death animation
         OnDeath?.Invoke(this);
