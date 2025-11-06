@@ -13,9 +13,7 @@ public class EnemyPiece : ChessPiece {
     [SerializeField] protected int cooldownToMove;
     [SerializeField] protected bool readyToMove = false;
 
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    private Color originalColor;
-
+    [SerializeField] private VisualEffects visualEffects;
 
     public System.Action<EnemyPiece> OnDeath;
 
@@ -25,10 +23,9 @@ public class EnemyPiece : ChessPiece {
             cooldownToMove = UnityEngine.Random.Range(2, enemyTypeSO.speed + 1);
         }
         
-        if (spriteRenderer == null) {
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (visualEffects == null) {
+            visualEffects = GetComponentInChildren<VisualEffects>();
         }
-        originalColor = spriteRenderer.color;
     }
 
     public void CheckControl() {
@@ -43,7 +40,7 @@ public class EnemyPiece : ChessPiece {
         if (threatenedTiles.Contains(tile)) {
             inThreat = true;
             if (showThreat) {
-                RedFlicker();
+                visualEffects.Flicker(Color.red, 0.1f, 3);
             }
         }
 
@@ -80,14 +77,14 @@ public class EnemyPiece : ChessPiece {
 
     private void GetReadyToMove() { // starts shaking
         readyToMove = true;
-        // Start shaking animation
+        visualEffects.StartShake();
     }
 
     private void StopReadyingToMove() { // Stop shaking
         readyToMove = false;
-        // Stop shaking animation
+        visualEffects.StopShake();
     }
-    
+
     public override void UpdateAvailableTiles(BoardTile[,] board) {
         Vector2Int currentPos = currentTile.GridPosition;
         availableTiles = GetTilesFromPatternList(board, currentPos, enemyTypeSO.movementPatterns, false);
@@ -235,22 +232,6 @@ public class EnemyPiece : ChessPiece {
         }
     }
     
-    public void RedFlicker() {
-        Color flickerColor = Color.red;
-        float flickerDuration = 0.1f;
-        int flickerCount = 3;
-        StartCoroutine(FlickerRoutine(flickerCount, flickerDuration, flickerColor));
-    }
-
-    private IEnumerator FlickerRoutine(int flickerCount, float flickerDuration, Color flickerColor) {
-        for (int i = 0; i < flickerCount; i++) {
-            spriteRenderer.color = flickerColor;
-            yield return new WaitForSeconds(flickerDuration);
-            spriteRenderer.color = originalColor;
-            yield return new WaitForSeconds(flickerDuration);
-        }
-    }
-
     private void Die() {
         // play death animation
         OnDeath?.Invoke(this);

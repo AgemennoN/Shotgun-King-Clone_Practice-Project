@@ -98,7 +98,7 @@ MonoBehaviour:
   currenHealth: 0
   cooldownToMove: 0
   readyToMove: 0
-  spriteRenderer: {fileID: 2352156946334107315}
+  visualEffects: {fileID: 5727323410373992641}
 --- !u!1 &9127972954426716240
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,6 +109,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3500913461901650638}
   - component: {fileID: 2352156946334107315}
+  - component: {fileID: 5727323410373992641}
   m_Layer: 0
   m_Name: sprite
   m_TagString: Untagged
@@ -189,3 +190,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5727323410373992641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127972954426716240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa18220090c0a1438ccc6b2a10d91bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisualEffects
+  spriteRenderer: {fileID: 2352156946334107315}
