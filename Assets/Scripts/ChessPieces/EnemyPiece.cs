@@ -134,6 +134,7 @@ public class EnemyPiece : ChessPiece {
                 if (pieceOnTheTile is PlayerPiece && canCapture) {
                     // PlayerPiece can be captured so the tile is available
                     availableTiles.Add(targetTile);
+                    continue;
                 }
                 // Stop if blocked by another piece
                 break;
@@ -157,6 +158,7 @@ public class EnemyPiece : ChessPiece {
                 if (pieceOnTheTile is PlayerPiece && canCapture) {
                     // PlayerPiece can be captured so the tile is available
                     availableTiles.Add(targetTile);
+                    continue;
                 }
                 // Stop if blocked by another piece
                 break;

@@ -37,7 +37,7 @@ MonoBehaviour:
   - direction: {x: -1, y: 0}
     movementType: 0
     maxDistance: 1
-  - direction: {x: -1, y: -1}
+  - direction: {x: -1, y: 1}
     movementType: 0
     maxDistance: 1
   isThreatSameWithMovement: 1
