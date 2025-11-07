@@ -5,10 +5,9 @@ using Random = UnityEngine.Random;
 
 public class Shotgun : Weapon
 {
-    //[SerializeField] private AimIndicator aimIndicator;
-    //[SerializeField] private ArrowIndicator aimIndicator;
 
-    public override bool Shoot(Vector3 from, Vector3 to) {
+    public override bool Shoot(Vector3 to) {
+        Vector3 from = transform.position;
         bool isShooted = false;
         if (weaponData == null) return isShooted;
         if (currentMag == 0) return isShooted;
@@ -32,13 +31,18 @@ public class Shotgun : Weapon
             bullet.transform.rotation = rotation;
             bullet.gameObject.SetActive(true);
 
+            float fireRange = weaponData.fireMaxRange;
+            if (i > (weaponData.firePower / 3)-1) {
+                fireRange = UnityEngine.Random.Range((float)weaponData.fireMinRange, (float)weaponData.fireMaxRange);
+            }
+
             bullet.Initialize(
-                weaponData.bulletSpeed,
-                weaponData.bulletDamage,
-                weaponData.fireRange,
-                bulletPool,
-                i
-            );
+                    weaponData.bulletSpeed,
+                    weaponData.bulletDamage,
+                    fireRange,
+                    bulletPool,
+                    i
+                );
 
             //TO DO: Check if this method prevents memory leak
             Action<Bullet> onFinish = null;
@@ -50,20 +54,12 @@ public class Shotgun : Weapon
         }
 
         currentMag -= 1;
+        Aim(false);
         return isShooted;
     }
 
     private IEnumerator WaitForBulletsToFinish(Func<bool> allDoneCondition) {
         // TO DO: Is this the best placement for this IEnumerator?
         yield return new WaitUntil(allDoneCondition);
-    }
-
-    public override void Aim(bool enable) {
-        //if (enable) {
-        //    aimIndicator.Show(new Vector3(),new Vector3());
-        //} else {
-        //    aimIndicator.Hide();
-        //}
-        throw new System.NotImplementedException();
     }
 }

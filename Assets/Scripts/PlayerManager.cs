@@ -10,12 +10,11 @@ public class PlayerManager : MonoBehaviour {
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private ArrowIndicator arrowIndicator;
     [SerializeField] private BoardInputBroadcaster boardInputBroadcaster;
-    [SerializeField] private Weapon weapon;
-
-    public PlayerPiece playerPiece; // TO DO Should be private to be more OOP
-    public List<BoardTile> playerAvailableMoves; // TO DO Should be private to be more OOP
 
     private TurnManager turnManager;
+    private PlayerPiece playerPiece;
+    private List<BoardTile> playerAvailableMoves;
+    private Weapon weapon;
 
     private int shieldChargesLimit = 2;  // Number of times the player is protected from moving onto a threatened tile.
     private int shieldChargesRemaining;
@@ -48,14 +47,14 @@ public class PlayerManager : MonoBehaviour {
                 Vector3 from = playerPiece.GetTile().transform.position;
                 Vector3 to = tile.transform.position;
                 arrowIndicator.Show(from, to);
-                //weapon.Aim(false);
+                weapon.Aim(false);
             } else {
                 arrowIndicator.Hide();
-                //weapon.Aim(true);
+                weapon.Aim(true);
             }
         else {
             arrowIndicator.Hide();
-            //weapon.Aim(false);
+            weapon.Aim(false);
         }
     }
 
@@ -75,7 +74,7 @@ public class PlayerManager : MonoBehaviour {
                 }
             } else if (tile != playerPiece.GetTile()) {
                 if (IsActionApprovedByShieldProtection(GetPlayersTile())) {
-                    if (weapon.Shoot(playerPiece.transform.position, mouseWorldPos)) {
+                    if (weapon.Shoot(mouseWorldPos)) {
                         StartCoroutine(TurnManager.Instance.StartActionPhase(true));    // When all the registered coroutines end, End Turn
                     }
                 } else {
@@ -103,6 +102,7 @@ public class PlayerManager : MonoBehaviour {
             return;
         }
         playerPiece.SetPosition(BoardManager.Board[3, 0]);
+        weapon = obj.GetComponentInChildren<Weapon>();
     }
 
     private void StartPlayerTurn() {

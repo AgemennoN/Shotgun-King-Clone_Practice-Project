@@ -4,7 +4,8 @@ using UnityEngine;
 public class WeaponDataSO : ScriptableObject
 {
     public int firePower;           // Number of bullets fired per shot
-    public int fireRange;           // Max bullet travel distance
+    public int fireMaxRange;        // Max bullet travel distance
+    public int fireMinRange;        // Max bullet travel distance
     public int fireArc;             // Spread angle in degrees
     public float bulletSpeed;       // Bullet travel speed
     public int bulletDamage;

@@ -1,23 +1,47 @@
 using System;
 using UnityEngine;
 
+
+[RequireComponent(typeof(BulletPool))]
+[RequireComponent(typeof(AimIndicator))]
 public abstract class Weapon : MonoBehaviour
 {
     [SerializeField] protected WeaponDataSO weaponData;
 
     protected int currentMag;         // Current number of shells currently loaded in the weapon
     protected int currentReserveAmmo; // Current number of reserve shells available for reloading
-    [SerializeField] protected BulletPool bulletPool;
+    protected BulletPool bulletPool;
+    protected AimIndicator aimIndicator;
+    private bool isAiming = false;
+
+    protected virtual void Awake() {
+        bulletPool = GetComponent<BulletPool>();
+        aimIndicator = GetComponent<AimIndicator>();
+    }
 
     protected virtual void Start() {
         currentMag = weaponData.magCapacity;
         currentReserveAmmo = weaponData.maxReserveAmmo;
         bulletPool.SetInitialBulletSize(weaponData.firePower);
         bulletPool.Initialize();
+
+
+        aimIndicator.Hide();
+        aimIndicator.SetValues(transform, weaponData.fireArc, weaponData.fireMinRange, weaponData.fireMaxRange);
     }
 
-    public abstract bool Shoot(Vector3 from, Vector3 to);
-    public abstract void Aim(bool enable);
+    public abstract bool Shoot(Vector3 to);
+    
+    public virtual void Aim(bool enable) {
+        if (!isAiming && enable && currentMag > 0) {
+            isAiming = true;
+            aimIndicator.Show();
+        }
+        else if(isAiming && !enable) {
+            isAiming = false;
+            aimIndicator.Hide();
+        }
+    }
 
     public virtual void Reload() {
         if (currentMag < weaponData.magCapacity && currentReserveAmmo > 0) {
