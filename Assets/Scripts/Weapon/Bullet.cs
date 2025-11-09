@@ -30,7 +30,7 @@ public class Bullet : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision) {
         var enemy = collision.GetComponent<EnemyPiece>();
-        if (enemy != null) {
+        if (enemy != null && !enemy.IsDead) {
             enemy.TakeDamage(damage);
             ReturnToPool();
         }

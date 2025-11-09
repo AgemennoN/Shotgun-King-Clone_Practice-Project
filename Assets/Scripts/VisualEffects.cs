@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class VisualEffects : MonoBehaviour {
 
+    [SerializeField] private EnemyPiece enemyPiece;
+
     [Header("Sprite Effects")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     private Vector3 originalSpriteLocalPos;
@@ -31,6 +33,9 @@ public class VisualEffects : MonoBehaviour {
             textMesh = gameObject.GetComponentInChildren<TextMeshPro>();
         }
         textMesh.enabled = false;
+
+        enemyPiece = GetComponent<EnemyPiece>();
+        enemyPiece.OnDeath += DeathAnimation;
     }
 
     public void StartShake(float intensity = 0.035f, float speed = 30f) {
@@ -98,4 +103,23 @@ public class VisualEffects : MonoBehaviour {
         textMesh.enabled = false;
     }
 
+    private void DeathAnimation(EnemyPiece enemyPiece) {
+        StartCoroutine(DeathAnimationRoutine(enemyPiece));
+    }
+
+    private IEnumerator DeathAnimationRoutine(EnemyPiece enemyPiece) {
+
+        float elapsed = 0f;
+        float spriteFadeDuration = 1f;
+        
+        while (elapsed < spriteFadeDuration) {
+            elapsed += Time.deltaTime;
+            float t = elapsed / textFadeDuration;
+            spriteRenderer.color = new Color(originalSpriteColor.r, originalSpriteColor.g, originalSpriteColor.b, 1 - t);
+            yield return null;
+        }
+
+        // TO DO: DESTROY ON THE ANIMATION SCRIPT?????????????????????????? FIX IT
+        Destroy(enemyPiece.gameObject);
+    }
 }

@@ -18,7 +18,11 @@ public class EnemyPiece : ChessPiece {
 
     private Coroutine damageCoroutine;
     private int pendingDamage;
+
+    public bool IsDead { get; private set; }
+    //TO DO: Refactor VisualEffects to be an observer.
     public System.Action<EnemyPiece> OnDeath;
+    //public System.Action<EnemyPiece,int> OnTakeDamage;
 
 
     private void Awake() {
@@ -30,6 +34,7 @@ public class EnemyPiece : ChessPiece {
         if (visualEffects == null) {
             visualEffects = GetComponent<VisualEffects>();
         }
+        IsDead = false;
     }
 
     public void CheckControl() {
@@ -238,7 +243,7 @@ public class EnemyPiece : ChessPiece {
         }
 
         if (currentHealth - pendingDamage <= 0) {
-            StopAllCoroutines();
+            Debug.Log("currentHealth: " + currentHealth + ":pendingDamage :" + pendingDamage);
             Die();
         }
     }
@@ -256,9 +261,14 @@ public class EnemyPiece : ChessPiece {
     }
     
     private void Die() {
+        if (IsDead) return;
+        IsDead = true;
         // play death animation
+        BoxCollider2D boxCollider2D = GetComponent<BoxCollider2D>();
+        boxCollider2D.enabled = false;
+
+        currentTile.SetPiece(null);
         OnDeath?.Invoke(this);
-        Destroy(gameObject);
     }
 
     public EnemyTypeSO GetEnemyTypeSO() {
