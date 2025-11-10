@@ -16,7 +16,6 @@ public class PieceFactory : MonoBehaviour {
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public GameObject CreatePieceOnBoard(BoardTile[,] board, EnemyType enemyType, int x, int y, Transform parent) {

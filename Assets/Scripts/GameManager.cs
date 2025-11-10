@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -9,6 +11,9 @@ public class GameManager : MonoBehaviour {
     private BoardManager boardManager;
     private TurnManager turnManager;
 
+    [SerializeField] private GameObject gameOverPanel;
+
+
     private void Awake() {
         if (Instance != null && Instance != this) {
             Destroy(gameObject);
@@ -16,7 +21,6 @@ public class GameManager : MonoBehaviour {
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start() {
@@ -34,13 +38,29 @@ public class GameManager : MonoBehaviour {
         enemyManager.Initialize();
         playerManager = PlayerManager.Instance;
         playerManager.Initialize();
-    }
 
+        EnemyManager.onEnemyCheckMatesThePlayer += HandleEnemyWins;
+    }
     public void StartGame() {
         playerManager.SpawnPlayer();
         enemyManager.SpawnEnemyDictOfTheMap();
         
         turnManager.GameStart();
+    }
+
+    private void HandleEnemyWins() {
+        gameOverPanel.SetActive(true);
+    }
+
+    public void OnPlayAgainButton() {
+
+        gameOverPanel.SetActive(false);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnDisable() {
+        EnemyManager.onEnemyCheckMatesThePlayer -= HandleEnemyWins;
     }
 
 }

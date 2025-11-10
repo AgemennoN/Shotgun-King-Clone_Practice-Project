@@ -14,7 +14,6 @@ public class EnemyPiece : ChessPiece {
     [SerializeField] protected int cooldownToMove;
     [SerializeField] protected bool readyToMove = false;
 
-    [SerializeField] protected VisualEffects visualEffects;
 
     private Coroutine damageCoroutine;
     private int pendingDamage;
@@ -25,25 +24,25 @@ public class EnemyPiece : ChessPiece {
     //public System.Action<EnemyPiece,int> OnTakeDamage;
 
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         if (enemyTypeSO != null) {
             currentHealth = enemyTypeSO.maxHealth;
             cooldownToMove = UnityEngine.Random.Range(2, enemyTypeSO.speed + 1);
         }
-        
-        if (visualEffects == null) {
-            visualEffects = GetComponent<VisualEffects>();
-        }
+
         IsDead = false;
     }
 
-    public void CheckControl() {
+    public EnemyPiece CheckControl(bool showThreat=false) {
         UpdateThreatenedTiles(BoardManager.Board);
 
-        IsTileIsInThreatened(PlayerManager.Instance.GetPlayersTile());
+        if (IsTileIsInThreatened(PlayerManager.Instance.GetPlayersTile(), showThreat))
+            return this;
+        return null;
     }
 
-    public bool IsTileIsInThreatened(BoardTile tile, bool showThreat = false) {
+    public bool IsTileIsInThreatened(BoardTile tile, bool showThreat=false) {
         bool inThreat = false;
 
         if (threatenedTiles.Contains(tile)) {
@@ -76,6 +75,13 @@ public class EnemyPiece : ChessPiece {
                 }
             }
         }
+
+        StartCoroutine(AfterActionUpdateThreatenedTilesRoutine()); // All pieces should have finished by the time this coroutine starts
+    }
+
+    private IEnumerator AfterActionUpdateThreatenedTilesRoutine(float waitDuration = 0.3f) {
+        yield return new WaitForSeconds(waitDuration);
+        UpdateThreatenedTiles(BoardManager.Board);
     }
 
     private void ReduceCooldown() {
@@ -230,6 +236,45 @@ public class EnemyPiece : ChessPiece {
         if (threatenedTiles.Contains(targetTile))
             return true;
         return false;
+    }
+
+    public void CheckMateTheKing() {
+        PlayerManager.Instance.CheckMatedAnimation();
+        StartCoroutine(CheckmateMoveToPosition());
+    }
+
+    private IEnumerator CheckmateMoveToPosition() {
+        Vector3 targetPos = PlayerManager.Instance.GetPlayersTile().transform.position;
+        Vector3 startPos = transform.position;
+        float liftHeight = 0.5f;
+        float time = 0f;
+
+        while (time < checkMateMovementDuration) {
+            time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / checkMateMovementDuration);
+
+            // Interpolate horizontal position
+            Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
+
+            // Create lift curve: rises early, falls near the end
+            // Shape: ease-out up, ease-in down
+            float lift;
+            if (t < 0.3f)
+                lift = Mathf.SmoothStep(0f, liftHeight, t / 0.3f);  // rise quickly
+            else if (t > 0.7f)
+                lift = Mathf.SmoothStep(liftHeight, 0f, (t - 0.7f) / 0.3f);  // lower smoothly
+            else
+                lift = liftHeight;  // stay up briefly in the middle
+
+            // Apply vertical lift
+            transform.position = horizontalPos + Vector3.up * lift;
+
+            yield return null;
+        }
+
+        transform.position = targetPos;
+
+        EnemyManager.onEnemyCheckMatesThePlayer?.Invoke();
     }
 
     public void TakeDamage(int amount) {

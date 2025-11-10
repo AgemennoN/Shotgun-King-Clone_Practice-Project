@@ -29,9 +29,8 @@ public class VisualEffects : MonoBehaviour {
 
         if (textMesh == null) {
             textMesh = gameObject.GetComponentInChildren<TextMeshPro>();
+            if (textMesh != null) textMesh.enabled = false;
         }
-        textMesh.enabled = false;
-
     }
 
     public void StartShake(float intensity = 0.035f, float speed = 30f) {

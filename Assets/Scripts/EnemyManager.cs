@@ -6,6 +6,7 @@ using static UnityEngine.Rendering.DebugUI.Table;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
+    public static Action onEnemyCheckMatesThePlayer;
 
     private Dictionary<EnemyType, int> enemyDictToCreate;
     private Dictionary<EnemyType, List<GameObject>> enemyDict;
@@ -35,9 +36,6 @@ public class EnemyManager : MonoBehaviour {
         Pawn.OnPawnPromoted += HandlePawnPromoted;
     }
 
-
-
-
     public void Initialize() {
         pieceFactory = PieceFactory.Instance;
         boardManager = BoardManager.Instance;
@@ -49,18 +47,20 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void StartEnemyTurn() {
-        IsEnemyKingAliveControl();
-        
-        AllCheckControl();
+        bool gameEnd = !IsEnemyKingAliveControl();
 
-        AllTakeAction();
+        if (!gameEnd)
+            gameEnd = AllCheckControlForMate();
 
-        AllCheckControl();
-        StartCoroutine(TurnManager.Instance.StartActionPhase(true));
+        if (!gameEnd) {
+            AllTakeAction();
+            StartCoroutine(TurnManager.Instance.StartActionPhase(true));
+        }
     }
 
-    private void AllCheckControl() {
-        // All pieces should check if they are Checking the Player's king before taking action
+    private bool AllCheckControlForMate() {
+        EnemyPiece checkingPiece = null;
+
         foreach (EnemyType type in executionOrder) {
             if (!enemyDict.ContainsKey(type))
                 continue;
@@ -70,11 +70,17 @@ public class EnemyManager : MonoBehaviour {
 
                 EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
                 if (piece != null) {
-                    piece.CheckControl();
+                    if (checkingPiece == null) checkingPiece = piece.CheckControl(true); // Get the first piece that checks to Mate
+                    else piece.CheckControl(true); // Show the threat with the rest of the checking pieces but don't need to hold them
                 } else
                     Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
             }
         }
+        if (checkingPiece != null) {
+            checkingPiece.CheckMateTheKing();
+            return true;
+        }
+        return false;
     }
 
     public bool IsTileInThreatened(BoardTile tile, bool showThreat=false) {

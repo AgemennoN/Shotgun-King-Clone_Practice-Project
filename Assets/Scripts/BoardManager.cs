@@ -22,7 +22,6 @@ public class BoardManager : MonoBehaviour {
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public void Initialize() {

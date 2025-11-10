@@ -26,7 +26,6 @@ public class PlayerManager : MonoBehaviour {
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public void Initialize() {
@@ -143,6 +142,10 @@ public class PlayerManager : MonoBehaviour {
         shieldChargesRemaining--;
     }
 
+    public void CheckMatedAnimation() {
+        playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.checkMateMovementDuration);
+    }
+
     private void EndTurn() {
         turnManager.EndPlayerTurn();
     }
@@ -150,4 +153,5 @@ public class PlayerManager : MonoBehaviour {
     private void OnGUI() { // To Do: DEBUG Delete Later
         GUI.Label(new Rect(10, 70, 300, 20), $"Shield: {shieldChargesRemaining}/{shieldChargesLimit}");
     }
+
 }

@@ -1,13 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class ChessPiece : MonoBehaviour {
+
+    public VisualEffects visualEffects;
 
     protected BoardTile currentTile;
     [SerializeField] protected List<BoardTile> availableTiles;
     [SerializeField] protected List<BoardTile> threatenedTiles;
-    protected float movementDuration = 0.5f;
+    public static float movementDuration = 0.5f;
+    public static float checkMateMovementDuration = 2f;
+
+    protected virtual void Awake() {
+        visualEffects = GetComponent<VisualEffects>();
+    }
 
     public void SetPosition(BoardTile tile) {
         if (currentTile != null) {
@@ -30,17 +38,26 @@ public class ChessPiece : MonoBehaviour {
         tile.SetPiece(this); // Update new tile  
     }
 
-    private IEnumerator MoveToPositionPhysically(Vector3 targetPos, float duration) {
+    private IEnumerator MoveToPositionPhysically(Vector3 targetPos, float duration, float jumpHeight = 0.5f) {
         Vector3 startPos = transform.position;
         float time = 0f;
 
         while (time < duration) {
-            transform.position = Vector3.Lerp(startPos, targetPos, time / duration);
             time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / duration);
+
+            // Lerp position between start and target
+            Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
+
+            // Add a jump arc using a parabola: height = 4h * t * (1 - t)
+            float height = 4f * jumpHeight * t * (1f - t);
+
+            // Apply the vertical offset
+            transform.position = horizontalPos + Vector3.up * height;
+
             yield return null;
         }
-
-        transform.position = targetPos; // Ensure it lands exactly
+        transform.position = targetPos;
     }
 
     public BoardTile GetTile() { return currentTile; }

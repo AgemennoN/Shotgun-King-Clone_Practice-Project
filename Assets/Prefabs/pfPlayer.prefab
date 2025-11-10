@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7738050101878433313}
   - component: {fileID: -2744640903713250803}
+  - component: {fileID: -6706781494539000511}
   m_Layer: 0
   m_Name: pfPlayer
   m_TagString: Untagged
@@ -46,8 +47,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b3e11d59078a44594768bf4dc2effa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPiece
+  visualEffects: {fileID: 0}
   availableTiles: []
   threatenedTiles: []
+--- !u!114 &-6706781494539000511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4699861740255049132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa18220090c0a1438ccc6b2a10d91bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisualEffects
+  spriteRenderer: {fileID: 0}
+  textMesh: {fileID: 0}
+  textFloatSpeed: 0.75
+  textFadeDuration: 1
+  textColor: {r: 1, g: 0, b: 0, a: 1}
+  textLocalPosOffset: {x: 0.3, y: 0.3, z: 0}
 --- !u!1 &9127972954426716240
 GameObject:
   m_ObjectHideFlags: 0
