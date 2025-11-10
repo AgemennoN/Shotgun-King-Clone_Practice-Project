@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     private TurnManager turnManager;
 
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject perkSelectPanel;
 
 
     private void Awake() {
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour {
         playerManager.Initialize();
 
         EnemyManager.onEnemyCheckMatesThePlayer += HandleEnemyWins;
+        EnemyManager.onEnemyKingsDie += HandlePlayerWins;
     }
     public void StartGame() {
         playerManager.SpawnPlayer();
@@ -51,16 +53,17 @@ public class GameManager : MonoBehaviour {
     private void HandleEnemyWins() {
         gameOverPanel.SetActive(true);
     }
+    private void HandlePlayerWins() {
+        perkSelectPanel.SetActive(true);
+    }
 
     public void OnPlayAgainButton() {
-
-        gameOverPanel.SetActive(false);
-
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void OnDisable() {
         EnemyManager.onEnemyCheckMatesThePlayer -= HandleEnemyWins;
+        EnemyManager.onEnemyKingsDie -= HandlePlayerWins;
     }
 
     private void Update() {

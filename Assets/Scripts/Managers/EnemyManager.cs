@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
     public static Action onEnemyCheckMatesThePlayer;
+    public static Action onEnemyKingsDie;
 
     private Dictionary<EnemyType, int> enemyDictToCreate;
     private Dictionary<EnemyType, List<GameObject>> enemyDict;
@@ -14,7 +17,7 @@ public class EnemyManager : MonoBehaviour {
     private BoardManager boardManager;
     private TurnManager turnManager;
 
-    private EnemyType[] executionOrder =
+    private readonly EnemyType[] executionOrder =
         {
             EnemyType.Pawn,
             EnemyType.King,
@@ -105,8 +108,10 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private bool IsEnemyKingAliveControl() {
-        // Check if there is any King left in the dictionary if not the stage will end
-        return true;
+        if (enemyDict[EnemyType.King].Count > 0) return true;
+        Debug.Log("No White King Left Player Wins");
+        KillAllEnemies();
+        return false;
     }
 
     private void AllTakeAction() {
@@ -125,6 +130,15 @@ public class EnemyManager : MonoBehaviour {
                     Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
             }
         }
+    }
+
+    private void KillAllEnemies() {
+        var allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
+        foreach (GameObject enemy in allEnemies) {
+            if (enemy == null) continue;
+            enemy.GetComponent<EnemyPiece>().Die();
+        }
+        onEnemyKingsDie?.Invoke();
     }
 
     private void InitEnemyDict() {

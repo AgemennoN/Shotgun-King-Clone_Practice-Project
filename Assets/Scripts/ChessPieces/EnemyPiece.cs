@@ -280,7 +280,6 @@ public class EnemyPiece : ChessPiece {
         }
 
         if (currentHealth - pendingDamage <= 0) {
-            Debug.Log("currentHealth: " + currentHealth + ":pendingDamage :" + pendingDamage);
             Die();
         }
     }
@@ -292,7 +291,7 @@ public class EnemyPiece : ChessPiece {
         pendingDamage = 0;
         damageCoroutine = null;
     }
-    protected void Die() {
+    public void Die() {
         if (IsDead) return;
         IsDead = true;
 
