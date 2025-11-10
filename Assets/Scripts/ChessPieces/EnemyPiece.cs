@@ -1,12 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Multiplayer.Center.Common;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyPiece : ChessPiece {
     [SerializeField] protected EnemyTypeSO enemyTypeSO;

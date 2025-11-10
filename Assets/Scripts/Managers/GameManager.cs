@@ -63,4 +63,10 @@ public class GameManager : MonoBehaviour {
         EnemyManager.onEnemyCheckMatesThePlayer -= HandleEnemyWins;
     }
 
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.R)) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
 }

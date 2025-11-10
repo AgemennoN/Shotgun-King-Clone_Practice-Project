@@ -29,9 +29,7 @@ public class BoardManager : MonoBehaviour {
     }
 
     private void GenerateBoard() {
-        if (Board != null)
-            return; // already generated Might destroy the Board Later DestroyBoard()
-
+        DestroyBoard(); // Clean up previous tiles if they exist
         Board = new BoardTile[boardWidth, boardHeight];
 
         float tileWorldSize = blackTileSprite.bounds.size.x * spriteScaleFactor;
@@ -58,6 +56,7 @@ public class BoardManager : MonoBehaviour {
             foreach (BoardTile tile in Board)
                 if (tile != null)
                     Destroy(tile.gameObject);
+            Board = null;
         }
     }
 
@@ -85,6 +84,10 @@ public class BoardManager : MonoBehaviour {
         }
 
         return closest;
+    }
+
+    private void OnDestroy() {
+        DestroyBoard();    
     }
 
     public void PrintBoard() {

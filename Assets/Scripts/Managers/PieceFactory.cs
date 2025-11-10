@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public class PieceFactory : MonoBehaviour {
-    public static PieceFactory Instance { get; private set; }
 
     public GameObject kingPrefab;
     public GameObject queenPrefab;
@@ -9,14 +8,6 @@ public class PieceFactory : MonoBehaviour {
     public GameObject knightPrefab;
     public GameObject bishopPrefab;
     public GameObject pawnPrefab;
-
-    private void Awake() {
-        if (Instance != null && Instance != this) {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-    }
 
     public GameObject CreatePieceOnBoard(BoardTile[,] board, EnemyType enemyType, int x, int y, Transform parent) {
         // x is column, y is row

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI.Table;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
@@ -37,7 +36,7 @@ public class EnemyManager : MonoBehaviour {
     }
 
     public void Initialize() {
-        pieceFactory = PieceFactory.Instance;
+        pieceFactory = GetComponent<PieceFactory>();
         boardManager = BoardManager.Instance;
         turnManager = TurnManager.Instance;
 
