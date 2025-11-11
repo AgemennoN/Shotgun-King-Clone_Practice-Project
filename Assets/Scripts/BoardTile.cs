@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -31,6 +32,10 @@ public class BoardTile : MonoBehaviour {
     private PlayerManager playerManager;
     private ChessPiece pieceOnIt;
 
+    private Color originalColor;
+    [SerializeField] private Color highlightColor = new Color(1f, 0.3f, 0.3f, 1f); // light red tint
+    private Coroutine highlightRoutine;
+
     public Vector2Int GridPosition => new Vector2Int(gridPositionX, gridPositionY);
     public ChessPiece GetPiece() => pieceOnIt;
 
@@ -54,6 +59,8 @@ public class BoardTile : MonoBehaviour {
         spriteRenderer.sprite = sprite;
         spriteRenderer.sortingLayerName = "ChessBoard";
         transform.localScale = Vector3.one * spriteScaleFactor;
+
+        originalColor = spriteRenderer.color;
     }
 
     private void CreateCollider() {
@@ -62,6 +69,28 @@ public class BoardTile : MonoBehaviour {
         Bounds spriteBounds = spriteRenderer.sprite.bounds;
         boxCollider.size = spriteBounds.size;
         boxCollider.offset = spriteBounds.center;
+    }
+
+    public void Highlight(bool enable) {
+        if (highlightRoutine != null)
+            StopCoroutine(highlightRoutine);
+
+        highlightRoutine = StartCoroutine(HighlightRoutine(enable));
+    }
+
+    private IEnumerator HighlightRoutine(bool enable) {
+        Color targetColor = enable ? highlightColor : originalColor;
+        float duration = 0.15f;
+        float t = 0f;
+
+        Color startColor = spriteRenderer.color;
+
+        while (t < duration) {
+            t += Time.deltaTime;
+            spriteRenderer.color = Color.Lerp(startColor, targetColor, t / duration);
+            yield return null;
+        }
+        spriteRenderer.color = targetColor;
     }
 
 }

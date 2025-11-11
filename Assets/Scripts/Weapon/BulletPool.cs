@@ -12,7 +12,6 @@ public class BulletPool : MonoBehaviour {
         for (int i = 0; i < initialSize; i++) {
             GameObject bullet = Instantiate(bulletPrefab, transform);
             bullet.gameObject.SetActive(false);
-            Debug.Log($"BulletPool_Initialize_Bullet_{i}: {bullet}");
             pool.Enqueue(bullet);
         }
 
@@ -31,7 +30,6 @@ public class BulletPool : MonoBehaviour {
     }
 
     public void SetInitialBulletSize(int bulletNumber) {
-         Debug.Log($"BulletPool_SetInitialBulletSize: {bulletNumber}");
         initialSize = bulletNumber;
     }
 }

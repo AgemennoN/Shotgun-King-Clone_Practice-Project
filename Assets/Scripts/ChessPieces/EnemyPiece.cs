@@ -109,87 +109,6 @@ public class EnemyPiece : ChessPiece {
         threatenedTiles = GetTilesFromPatternList(board, currentPos, patterns, true);
     }
 
-    private List<BoardTile> GetTilesFromPatternList(BoardTile[,] board, Vector2Int currentPos, List<MovementPattern> patterns, bool canCapture) {
-        List<BoardTile> tiles = new List<BoardTile>();
-
-        foreach (MovementPattern pattern in patterns) {
-            switch (pattern.movementType) {
-                case MovementType.Jump:
-                    HandleJumpMove(board, currentPos, pattern, tiles, canCapture);
-                    break;
-
-                case MovementType.FiniteStep:
-                    HandleFiniteStepMove(board, currentPos, pattern, tiles, canCapture);
-                    break;
-
-                case MovementType.InfiniteStep:
-                    HandleInfiniteStepMove(board, currentPos, pattern, tiles, canCapture);
-                    break;
-            }
-        }
-        return tiles;
-    }
-
-    private void HandleJumpMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles, bool canCapture) {
-        Vector2Int targetPos = currentPos + pattern.direction;
-
-        if (!BoardManager.IsInsideBounds(targetPos))
-            return;
-
-        BoardTile targetTile = board[targetPos.x, targetPos.y];
-        ChessPiece pieceOnTheTile = targetTile.GetPiece();
-        if (pieceOnTheTile == null || (pieceOnTheTile is PlayerPiece && canCapture))
-            availableTiles.Add(targetTile);
-    }
-
-    private void HandleFiniteStepMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles, bool canCapture) {
-        for (int step = 1; step <= pattern.maxDistance; step++) {
-            Vector2Int targetPos = currentPos + pattern.direction * step;
-
-            if (!BoardManager.IsInsideBounds(targetPos))
-                break;
-
-            BoardTile targetTile = board[targetPos.x, targetPos.y];
-            ChessPiece pieceOnTheTile = targetTile.GetPiece();
-
-            if (pieceOnTheTile == null) {
-                availableTiles.Add(targetTile);
-            } else {
-                if (pieceOnTheTile is PlayerPiece && canCapture) {
-                    // PlayerPiece can be captured so the tile is available
-                    availableTiles.Add(targetTile);
-                    continue;
-                }
-                // Stop if blocked by another piece
-                break;
-            }
-        }
-    }
-
-    private void HandleInfiniteStepMove(BoardTile[,] board, Vector2Int currentPos, MovementPattern pattern, List<BoardTile> availableTiles, bool canCapture) {
-        for (int step = 1; ; step++) {
-            Vector2Int targetPos = currentPos + pattern.direction * step;
-
-            if (!BoardManager.IsInsideBounds(targetPos))
-                break;
-
-            BoardTile targetTile = board[targetPos.x, targetPos.y];
-            ChessPiece pieceOnTheTile = targetTile.GetPiece();
-
-            if (pieceOnTheTile == null) {
-                availableTiles.Add(targetTile);
-            } else {
-                if (pieceOnTheTile is PlayerPiece && canCapture) {
-                    // PlayerPiece can be captured so the tile is available
-                    availableTiles.Add(targetTile);
-                    continue;
-                }
-                // Stop if blocked by another piece
-                break;
-            }
-        }
-    }
-
     protected virtual BoardTile DecideMovementTile(List<BoardTile> availableTiles) {
         if (availableTiles.Count > 1) {
             List<BoardTile> checkingTiles = new List<BoardTile>();
@@ -294,6 +213,11 @@ public class EnemyPiece : ChessPiece {
     public void Die() {
         if (IsDead) return;
         IsDead = true;
+
+        if((enemyTypeSO.enemyType != EnemyType.King && enemyTypeSO.enemyType != EnemyType.Pawn) 
+            && PlayerManager.Instance.CanHarvestSoul()) { // TO DO: Do i realy need to check with CanHarvest
+            PlayerManager.Instance.HarvestSoul(enemyTypeSO);
+            }
 
         BoxCollider2D boxCollider2D = GetComponent<BoxCollider2D>();
         boxCollider2D.enabled = false;

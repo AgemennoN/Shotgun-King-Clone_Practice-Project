@@ -22,6 +22,9 @@ public class EnemyTypeSO : ScriptableObject
     public int maxHealth;
     public int speed;
 
+    // TO DO: will use sprite for Enemy information UI and Soul UI
+    public Sprite sprite; 
+
     public List<MovementPattern> movementPatterns;
     public bool isThreatSameWithMovement = false;
     public List<MovementPattern> threatPatterns;

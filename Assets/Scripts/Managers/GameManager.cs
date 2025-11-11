@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void OnPlayAgainButton() {
+        PlayerManager.ResetStaticVariablesOnDefeat(); //TO DO: use Event Maybe
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

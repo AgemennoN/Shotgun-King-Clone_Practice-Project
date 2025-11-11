@@ -109,7 +109,6 @@ public class EnemyManager : MonoBehaviour {
 
     private bool IsEnemyKingAliveControl() {
         if (enemyDict[EnemyType.King].Count > 0) return true;
-        Debug.Log("No White King Left Player Wins");
         KillAllEnemies();
         return false;
     }
