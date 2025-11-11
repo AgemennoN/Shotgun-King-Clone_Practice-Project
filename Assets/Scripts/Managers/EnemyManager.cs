@@ -7,11 +7,12 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyManager : MonoBehaviour {
     public static EnemyManager Instance { get; private set; }
+    public static Dictionary<EnemyType, int> enemyDictToCreate;
+
     public static Action onEnemyCheckMatesThePlayer;
     public static Action onEnemyKingsDie;
 
-    public static Dictionary<EnemyType, int> enemyDictToCreate;
-    private Dictionary<EnemyType, List<GameObject>> enemyDict;
+    private Dictionary<EnemyType, List<EnemyPiece>> enemyDict;
 
     private PieceFactory pieceFactory; 
     private BoardManager boardManager;
@@ -62,49 +63,30 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private bool AllCheckControlForMate() {
-        EnemyPiece checkingPiece = null;
+        List<EnemyPiece> allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
+        List<EnemyPiece> checkingEnemies = new List<EnemyPiece>();
 
-        foreach (EnemyType type in executionOrder) {
-            if (!enemyDict.ContainsKey(type))
-                continue;
-
-            foreach (GameObject enemy in enemyDict[type]) {
-                if (enemy == null) continue;
-
-                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
-                if (piece != null) {
-                    if (checkingPiece == null) checkingPiece = piece.CheckControl(true); // Get the first piece that checks to Mate
-                    else piece.CheckControl(true); // Show the threat with the rest of the checking pieces but don't need to hold them
-                } else
-                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
-            }
+        foreach (EnemyPiece enemy in allEnemies) {
+            if (enemy.CheckControl(true)) checkingEnemies.Add(enemy);
         }
-        if (checkingPiece != null) {
-            checkingPiece.CheckMateTheKing();
+
+        if (checkingEnemies.Count > 0) {
+            // Randomly one of the checking pieces captures the king
+            checkingEnemies[UnityEngine.Random.Range(0, checkingEnemies.Count)].CapturePlayer();
             return true;
         }
         return false;
     }
 
     public bool IsTileInThreatened(BoardTile tile, bool showThreat=false) {
-        // Iterate through the order and call IsTileIsInThreatened() on each
         bool inThreat = false;
 
-        foreach (EnemyType type in executionOrder) {
-            if (!enemyDict.ContainsKey(type))
-                continue;
-
-            foreach (GameObject enemy in enemyDict[type]) {
-                if (enemy == null) continue;
-
-                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
-                if (piece != null) {
-                    if (piece.IsTileIsInThreatened(tile, showThreat)) inThreat = true; ;
-                }
-                else
-                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
-            }
+        List<EnemyPiece> allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
+        foreach (EnemyPiece enemy in allEnemies) {
+            if (enemy.IsTileIsInThreatened(tile, showThreat))
+                inThreat = true;
         }
+
         return inThreat;
     }
 
@@ -117,26 +99,16 @@ public class EnemyManager : MonoBehaviour {
     private void AllTakeAction() {
         // Iterate through the order and call TakeAction() on each
         foreach (EnemyType type in executionOrder) {
-            if (!enemyDict.ContainsKey(type))
-                continue;
-
-            foreach (GameObject enemy in enemyDict[type]) {
-                if (enemy == null) continue;
-
-                EnemyPiece piece = enemy.GetComponent<EnemyPiece>();
-                if (piece != null)
-                    piece.TakeAction();
-                else
-                    Debug.LogWarning($"GameObject {enemy.name} has no EnemyPiece component.");
+            foreach (EnemyPiece enemy in enemyDict[type]) {
+                enemy.TakeAction();
             }
         }
     }
 
     private void KillAllEnemies() {
-        var allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
-        foreach (GameObject enemy in allEnemies) {
-            if (enemy == null) continue;
-            enemy.GetComponent<EnemyPiece>().Die();
+        List<EnemyPiece> allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
+        foreach (EnemyPiece enemy in allEnemies) {
+            enemy.Die();
         }
         onEnemyKingsDie?.Invoke();
     }
@@ -156,9 +128,9 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void InitEnemyDict() {
-        enemyDict = new Dictionary<EnemyType, List<GameObject>>();
+        enemyDict = new Dictionary<EnemyType, List<EnemyPiece>>();
         foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType))) {
-            enemyDict[type] = new List<GameObject>();
+            enemyDict[type] = new List<EnemyPiece>();
         }
     }
 
@@ -192,7 +164,6 @@ public class EnemyManager : MonoBehaviour {
                         RegisterToEnemyDict(nextPieceType, newPiece);
 
                         if (placementQueue.Count == 0) {
-                            PrintEnemyDict();
                             return;
                         }
                     }
@@ -204,16 +175,18 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void RegisterToEnemyDict(EnemyType enemyType, GameObject newPieceObj) {
-        enemyDict[enemyType].Add(newPieceObj);
+        EnemyPiece enemyPiece = newPieceObj.GetComponent<EnemyPiece>();
 
-        EnemyPiece newPiece = newPieceObj.GetComponent<EnemyPiece>();
-        newPiece.OnDeath += HandleEnemyDeath;
+        enemyDict[enemyType].Add(enemyPiece);
+        enemyPiece.OnDeath += HandleEnemyDeath;
+
     }
 
-    private void HandleEnemyDeath(EnemyPiece piece) {
-        piece.OnDeath -= HandleEnemyDeath;
-        if (enemyDict.TryGetValue(piece.GetEnemyTypeSO().enemyType, out var list)) {
-            list.Remove(piece.gameObject);
+    private void HandleEnemyDeath(EnemyPiece enemyPiece) {
+        enemyPiece.OnDeath -= HandleEnemyDeath;
+
+        if (enemyDict.TryGetValue(enemyPiece.GetEnemyTypeSO().enemyType, out var list)) {
+            list.Remove(enemyPiece);
         }
     }
 
@@ -245,7 +218,7 @@ public class EnemyManager : MonoBehaviour {
         BoardTile pawnTile = pawn.GetTile();
 
         if (enemyDict.TryGetValue(EnemyType.Pawn, out var list)) {
-            list.Remove(pawn.gameObject);
+            list.Remove(pawn);
         }
 
         GameObject newPiece = pieceFactory.CreatePieceOnBoard(BoardManager.Board, newType, pawnTile.GridPosition.x, pawnTile.GridPosition.y, transform);
@@ -255,21 +228,8 @@ public class EnemyManager : MonoBehaviour {
         visualEffects.SpriteFadeInAnimation(Pawn.PromotionDuration, true);
     }
 
-    private void EndTurn() {
-        turnManager.EndEnemyTurn();
-    }
-
-    public void PrintEnemyDict() {
-        foreach (var kvp in enemyDict) {
-            string message = $"{kvp.Key}: ";
-            foreach (GameObject enemy in kvp.Value) {
-                message += enemy != null ? enemy.name + ", " : "null, ";
-            }
-            Debug.Log(message);
-        }
-    }
-
     private void OnDisable() {
         Pawn.OnPawnPromoted -= HandlePawnPromoted;
     }
+
 }

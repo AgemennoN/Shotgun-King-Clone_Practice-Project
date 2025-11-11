@@ -183,8 +183,8 @@ public class PlayerManager : MonoBehaviour {
         shieldChargesRemaining--;
     }
 
-    public void CheckMatedAnimation() {
-        playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.checkMateMovementDuration);
+    public void CapturedByEnemyAnimation() {
+        playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.captureMovementDuration);
     }
 
     public bool CanHarvestSoul() {

@@ -29,12 +29,13 @@ public class EnemyPiece : ChessPiece {
         IsDead = false;
     }
 
-    public EnemyPiece CheckControl(bool showThreat=false) {
+    public bool CheckControl(bool showThreat=false) {
         UpdateThreatenedTiles(BoardManager.Board);
 
         if (IsTileIsInThreatened(PlayerManager.Instance.GetPlayersTile(), showThreat))
-            return this;
-        return null;
+            return true;
+
+        return false;
     }
 
     public bool IsTileIsInThreatened(BoardTile tile, bool showThreat=false) {
@@ -152,20 +153,20 @@ public class EnemyPiece : ChessPiece {
         return false;
     }
 
-    public void CheckMateTheKing() {
-        PlayerManager.Instance.CheckMatedAnimation();
-        StartCoroutine(CheckmateMoveToPosition());
+    public void CapturePlayer() {
+        PlayerManager.Instance.CapturedByEnemyAnimation();
+        StartCoroutine(MoveToPositionPhysically_CapturePlayer());
     }
 
-    private IEnumerator CheckmateMoveToPosition() {
+    private IEnumerator MoveToPositionPhysically_CapturePlayer() {
         Vector3 targetPos = PlayerManager.Instance.GetPlayersTile().transform.position;
         Vector3 startPos = transform.position;
         float liftHeight = 0.5f;
         float time = 0f;
 
-        while (time < checkMateMovementDuration) {
+        while (time < captureMovementDuration) {
             time += Time.deltaTime;
-            float t = Mathf.Clamp01(time / checkMateMovementDuration);
+            float t = Mathf.Clamp01(time / captureMovementDuration);
 
             // Interpolate horizontal position
             Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);

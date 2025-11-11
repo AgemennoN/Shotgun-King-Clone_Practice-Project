@@ -10,7 +10,7 @@ public class ChessPiece : MonoBehaviour {
     [SerializeField] protected List<BoardTile> availableTiles;
     [SerializeField] protected List<BoardTile> threatenedTiles;
     public static float movementDuration = 0.5f;
-    public static float checkMateMovementDuration = 2f;
+    public static float captureMovementDuration = 2f;
 
     protected virtual void Awake() {
         visualEffects = GetComponent<VisualEffects>();
