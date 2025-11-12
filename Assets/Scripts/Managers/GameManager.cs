@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,6 +7,10 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 
     public static GameManager Instance { get; private set; }
+    public static int Floor = 1;
+
+
+    //private PerkManager perkManager;
     private EnemyManager enemyManager;
     private PlayerManager playerManager;
     private BoardManager boardManager;
@@ -22,12 +27,13 @@ public class GameManager : MonoBehaviour {
         }
 
         Instance = this;
+
     }
 
     private void Start() {
         Initialize();
 
-        StartGame();
+        StartCoroutine(StartFloor());
     }
 
     public void Initialize() {
@@ -43,27 +49,47 @@ public class GameManager : MonoBehaviour {
         EnemyManager.onEnemyCheckMatesThePlayer += HandleEnemyWins;
         EnemyManager.onEnemyKingsDie += HandlePlayerWins;
     }
-    public void StartGame() {
-        playerManager.SpawnPlayer();
-        enemyManager.SpawnEnemyDictOfTheMap();
         
+
+    public IEnumerator PrepareNewFloor() {
+        yield return StartCoroutine(boardManager.NewFloorPreparation());        //Generates Board
+        yield return StartCoroutine(enemyManager.NewFloorPreparation());        //Generates Enemies
+        yield return StartCoroutine(playerManager.NewFloorPreparation());       //Generates PlayerPiece
+    }
+
+    public IEnumerator StartFloor() {
+        yield return StartCoroutine(PrepareNewFloor());
         turnManager.GameStart();
     }
 
     private void HandleEnemyWins() {
         gameOverPanel.SetActive(true);
     }
+
+
+    public void OnPlayAgainButton() {
+        GameManager.OnDefeat_ResetStaticsAllManagers();
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     private void HandlePlayerWins() {
-        enemyManager.onPlayerWin_EnemyManager();
-        boardManager.onPlayerWin_BoardManager();
-        playerManager.onPlayerWin_PlayerManager();
+        StartCoroutine(HandlePlayerWinsRoutine());
+    }
+
+    private IEnumerator HandlePlayerWinsRoutine() {
+        yield return StartCoroutine(enemyManager.onPlayerWin_EnemyManager());
+        yield return StartCoroutine(playerManager.onPlayerWin_PlayerManager());
+        yield return StartCoroutine(boardManager.onPlayerWin_BoardManager());
 
         // PerkManager might activate PerkSelectionPanel
         perkSelectPanel.SetActive(true);
     }
 
-    public void OnPlayAgainButton() {
-        PlayerManager.ResetStaticVariablesOnDefeat(); //TO DO: use Event Maybe
+    public void LoadNextFloor() { // Called from Perk select panel buttons
+        Floor++;
+        //When the Perk Manager ready Restart Scene
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -72,10 +98,14 @@ public class GameManager : MonoBehaviour {
         EnemyManager.onEnemyKingsDie -= HandlePlayerWins;
     }
 
-    private void Update() {
-        if (Input.GetKeyDown(KeyCode.R)) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    public static void ResetStaticVariablesOnDefeat() {
+        Floor = 1;
         }
+
+    public static void OnDefeat_ResetStaticsAllManagers() {       //TO DO: use Event Maybe
+        GameManager.ResetStaticVariablesOnDefeat();
+        PlayerManager.ResetStaticVariablesOnDefeat();
+
     }
 
 }

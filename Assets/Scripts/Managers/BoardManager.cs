@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,12 +25,15 @@ public class BoardManager : MonoBehaviour {
         Instance = this;
     }
 
-    public void Initialize() {
-        GenerateBoard();
+    public void Initialize() { //TO DO: Delete here If not needed
+        Debug.Log("BoardManager initialized alas nothing here");
     }
 
-    private void GenerateBoard() {
-        DestroyBoard(); // Clean up previous tiles if they exist
+
+    private IEnumerator GenerateBoard() {
+        yield return StartCoroutine(DestroyBoard()); // Clean up previous tiles if they exist
+
+        List<Coroutine> tileSpawnAnimations = new List<Coroutine>();
         Board = new BoardTile[boardWidth, boardHeight];
 
         float tileWorldSize = blackTileSprite.bounds.size.x * spriteScaleFactor;
@@ -42,24 +46,33 @@ public class BoardManager : MonoBehaviour {
             for (int y = 0; y < boardHeight; y++) {
                 Sprite sprite = ((x + y) % 2 == 0) ? blackTileSprite : whiteTileSprite;
                 Board[x, y] = BoardTile.Create(new Vector2Int(x, y), spriteScaleFactor, sprite, transform);
+                tileSpawnAnimations.Add(Board[x, y].SpawnTileAnimation(UnityEngine.Random.Range(0.3f, 1.5f)));
             }
         }
+
+        // Wait until all tiles are done animating
+        foreach (Coroutine c in tileSpawnAnimations)
+            yield return c;
     }
 
     public bool IsTileEmpty(int x, int y) {
         return Board[x, y].GetPiece() == null;
     }
 
-    private void DestroyBoard(bool withAnimation=false) {
+    private IEnumerator DestroyBoard(bool withAnimation=false) {
         if (Board != null) {
+            List<Coroutine> tileDestroyAnimations = new List<Coroutine>();
             // destroy old tiles
             foreach (BoardTile tile in Board) {
                 if (tile != null) {
                     if (!withAnimation) Destroy(tile.gameObject);
-                    else tile.DestroyTileWithAnimation(UnityEngine.Random.Range(0.3f, 1.5f));
+                    else tileDestroyAnimations.Add(tile.DestroyTileWithAnimation(UnityEngine.Random.Range(0.3f, 1.5f)));
                 }
             }
             Board = null;
+
+            foreach(Coroutine animation in tileDestroyAnimations)
+                yield return animation;
         }
     }
 
@@ -89,12 +102,16 @@ public class BoardManager : MonoBehaviour {
         return closest;
     }
 
-    public void onPlayerWin_BoardManager() {
-        DestroyBoard(true);
+    public IEnumerator NewFloorPreparation() {
+        yield return StartCoroutine(GenerateBoard());
+    }
+
+    public IEnumerator onPlayerWin_BoardManager() {
+        yield return StartCoroutine(DestroyBoard(true));
     }
 
     private void OnDestroy() {
-        DestroyBoard();    
+        Board = null;
     }
 
     public void PrintBoard() {

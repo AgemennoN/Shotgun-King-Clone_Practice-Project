@@ -32,7 +32,9 @@ public class BoardTile : MonoBehaviour {
     private PlayerManager playerManager;
     private ChessPiece pieceOnIt;
 
-    private Color originalColor;
+    private Color originalSpriteColor;
+    private Vector3 originalSpriteLocalPos;
+
     [SerializeField] private Color highlightColor = new Color(1f, 0.3f, 0.3f, 1f); // light red tint
     private Coroutine highlightRoutine;
 
@@ -60,7 +62,8 @@ public class BoardTile : MonoBehaviour {
         spriteRenderer.sortingLayerName = "ChessBoard";
         transform.localScale = Vector3.one * spriteScaleFactor;
 
-        originalColor = spriteRenderer.color;
+        originalSpriteColor = spriteRenderer.color;
+        originalSpriteLocalPos = spriteRenderer.transform.position;
     }
 
     private void CreateCollider() {
@@ -79,7 +82,7 @@ public class BoardTile : MonoBehaviour {
     }
 
     private IEnumerator HighlightRoutine(bool enable) {
-        Color targetColor = enable ? highlightColor : originalColor;
+        Color targetColor = enable ? highlightColor : originalSpriteColor;
         float duration = 0.15f;
         float t = 0f;
 
@@ -93,8 +96,8 @@ public class BoardTile : MonoBehaviour {
         spriteRenderer.color = targetColor;
     }
 
-    public void DestroyTileWithAnimation(float startDelay) {
-        StartCoroutine(DestroyTileWithAnimationRoutine(startDelay));
+    public Coroutine DestroyTileWithAnimation(float startDelay) {
+        return StartCoroutine(DestroyTileWithAnimationRoutine(startDelay));
     }
 
     public IEnumerator DestroyTileWithAnimationRoutine(float startDelay) {
@@ -119,6 +122,42 @@ public class BoardTile : MonoBehaviour {
             yield return null;
         }
         Destroy(gameObject);
+    }
+
+    public Coroutine SpawnTileAnimation(float startDelay) {
+        return StartCoroutine(SpawnTileAnimationRoutine(startDelay));
+    }
+
+    public IEnumerator SpawnTileAnimationRoutine(float startDelay) {
+
+        spriteRenderer.transform.localPosition = originalSpriteLocalPos + new Vector3(0, -2.5f, 0);
+        spriteRenderer.color = new Color(originalSpriteColor.r, originalSpriteColor.g, originalSpriteColor.b, 0);
+
+        yield return new WaitForSeconds(startDelay);
+
+        float duration = 0.5f;
+        Vector3 startPos = spriteRenderer.transform.localPosition;
+        Vector3 endPos = originalSpriteLocalPos;
+
+        Color startColor = spriteRenderer.color;
+        Color endColor = originalSpriteColor;
+
+        float elapsed = 0f;
+        // Smoothly move down and fade in
+        while (elapsed < duration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            t = Mathf.SmoothStep(0, 1, t); // ease in-out curve
+
+            spriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, t);
+            spriteRenderer.color = Color.Lerp(startColor, endColor, t);
+
+            yield return null;
+        }
+
+        // Snap to final position & color (in case of float rounding)
+        spriteRenderer.transform.localPosition = endPos;
+        spriteRenderer.color = endColor;
     }
 
 

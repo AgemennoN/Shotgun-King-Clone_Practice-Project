@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
@@ -53,7 +54,6 @@ public class PlayerManager : MonoBehaviour {
             soulTypeSOList.Add(null);
         }
         Debug.Log("soulTypeSOList.Count: " + soulTypeSOList.Count);
-
     }
 
     private void HandleTileHover(BoardTile tile) {
@@ -132,17 +132,15 @@ public class PlayerManager : MonoBehaviour {
         ExitSoulMode();
     }
 
-    public void SpawnPlayer() {
-        // TO DO: Make it private
+    private Coroutine SpawnPlayer() {
         GameObject obj = Instantiate(playerPrefab, transform);
         playerPiece = obj.GetComponent<PlayerPiece>();
-        if (playerPiece == null) {
-            Debug.LogError("Prefab does not contain a ChessPiece component.");
-            Destroy(obj);
-            return;
-        }
-        playerPiece.SetPosition(BoardManager.Board[3, 0]);
+
+        playerPiece.SetPosition(BoardManager.Board[4, 0]);
+        Coroutine playerSpawnAnimation = playerPiece.SpawnAnimation_Descend(0f);
         weapon = obj.GetComponentInChildren<Weapon>();
+
+         return playerSpawnAnimation;
     }
 
     private void StartPlayerTurn() {
@@ -280,17 +278,23 @@ public class PlayerManager : MonoBehaviour {
         }
     }
 
+    public IEnumerator NewFloorPreparation() {
+        yield return SpawnPlayer();
+
+    }
 
     public void CapturedByEnemyAnimation() {
         playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.captureMovementDuration);
     }
 
-    public void onPlayerWin_PlayerManager() {
-        DestroyPlayerPiece();
+    public IEnumerator onPlayerWin_PlayerManager() {
+        yield return StartCoroutine(DestroyPlayer());
     }
 
-    private void DestroyPlayerPiece() {
-        playerPiece.visualEffects.DestroyAnimation_Ascend();
+    private IEnumerator DestroyPlayer() {
+        yield return playerPiece.visualEffects.DestroyAnimation_Ascend(0.5f, 1.5f);
+        playerPiece = null;
+        weapon = null;
     }
 
 }

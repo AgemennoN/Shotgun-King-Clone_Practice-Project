@@ -157,8 +157,8 @@ public class ChessPiece : MonoBehaviour {
         return threatenedTiles;
     }
 
-    public void SpawnAnimation_Descend(float startDelay = 0.5f) {
-        visualEffects.SpawnAnimation_Descend(startDelay);
+    public Coroutine SpawnAnimation_Descend(float startDelay = 0.5f) {
+        return visualEffects.SpawnAnimation_Descend(startDelay);
     }
 
 }

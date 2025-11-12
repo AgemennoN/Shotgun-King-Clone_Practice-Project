@@ -139,8 +139,8 @@ public class VisualEffects : MonoBehaviour {
         }
     }
 
-    public void SpawnAnimation_Descend(float startDelay = 0.5f) {
-        StartCoroutine(SpawnAnimation_DescendRoutine(startDelay));
+    public Coroutine SpawnAnimation_Descend(float startDelay = 0.5f) {
+        return StartCoroutine(SpawnAnimation_DescendRoutine(startDelay));
     }
 
     private IEnumerator SpawnAnimation_DescendRoutine(float startDelay, float duration = 0.6f) {
@@ -175,14 +175,14 @@ public class VisualEffects : MonoBehaviour {
 
 
 
-    public void DestroyAnimation_Ascend() {
-        StartCoroutine(DestroyAnimation_AscendRoutine());
+    public Coroutine DestroyAnimation_Ascend(float duration = 0.5f, float ascendDistance = 1.5f) {
+        return StartCoroutine(DestroyAnimation_AscendRoutine(duration, ascendDistance));
     }
 
-    private IEnumerator DestroyAnimation_AscendRoutine(float duration = 0.5f) {
+    private IEnumerator DestroyAnimation_AscendRoutine(float duration = 0.5f, float ascendDistance = 1.5f) {
         float elapsed = 0f;
         Vector3 startPos = spriteRenderer.transform.localPosition;
-        Vector3 endPos = startPos + new Vector3(0, 2.5f, 0);
+        Vector3 endPos = startPos + new Vector3(0, ascendDistance, 0);
 
         Color startColor = spriteRenderer.color;
         Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0); ;

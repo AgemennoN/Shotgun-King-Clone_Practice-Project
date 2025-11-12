@@ -105,10 +105,6 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
-    private void KillAllEnemies() {
-        StartCoroutine(KillAllEnemiesRoutine(0.5f));
-    }
-
     private IEnumerator KillAllEnemiesRoutine(float timeBetweenDeath) {
         List<EnemyPiece> allEnemies = enemyDict.Values.SelectMany(list => list).ToList();
         foreach (EnemyPiece enemy in allEnemies) {
@@ -117,7 +113,6 @@ public class EnemyManager : MonoBehaviour {
             yield return new WaitForSeconds(timeBetweenDeath);
         }
     }
-
 
     private void InitEnemyDictToCreate() {
         if (enemyDictToCreate != null)
@@ -140,14 +135,16 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
-    public void SpawnEnemyDictOfTheMap() {
+    private IEnumerator SpawnEnemyDictOfTheFloor() {
         if (!enemyDictToCreate.ContainsKey(EnemyType.King)) {
             throw new ArgumentException("The dictionary must contain a King enemy.");
         }
 
+        List<Coroutine> enemySpawnAnimations = new List<Coroutine>();
+
         float startCol = 3.5f;
         Queue<EnemyType> placementQueue = CreateSpawnQueue();
-        for (int row = 7; row >= 0; row--) {
+        for (int row = 7; row >= 0 && placementQueue.Count > 0; row--) {
             bool isPawnRow = (row == 7);
 
             float offset = 0.5f;
@@ -167,19 +164,20 @@ public class EnemyManager : MonoBehaviour {
                         nextPieceType = placementQueue.Dequeue();
                         GameObject newPieceObj = pieceFactory.CreatePieceOnBoard(BoardManager.Board, nextPieceType, col, row, transform);
                         EnemyPiece enemy = newPieceObj.GetComponent<EnemyPiece>();
-                        enemy.SpawnAnimation_Descend(UnityEngine.Random.Range(0f,1f));
+                        enemySpawnAnimations.Add(enemy.SpawnAnimation_Descend(UnityEngine.Random.Range(0f,1f)));
 
                         RegisterToEnemyDict(nextPieceType, newPieceObj);
 
                         if (placementQueue.Count == 0) {
-                            return;
+                            break;
                         }
                     }
                 }
-
                 offset += 1f;
             }
         }
+        foreach (Coroutine c in enemySpawnAnimations)
+            yield return c;
     }
 
     private void RegisterToEnemyDict(EnemyType enemyType, GameObject newPieceObj) {
@@ -236,8 +234,12 @@ public class EnemyManager : MonoBehaviour {
         visualEffects.SpriteFadeInAnimation(Pawn.PromotionDuration, true);
     }
 
-    public void onPlayerWin_EnemyManager() {
-        KillAllEnemies();
+    public IEnumerator NewFloorPreparation() {
+        yield return StartCoroutine(SpawnEnemyDictOfTheFloor());
+    }
+
+    public IEnumerator onPlayerWin_EnemyManager() {
+        yield return StartCoroutine(KillAllEnemiesRoutine(0.2f));
     }
 
     private void OnDisable() {
