@@ -54,6 +54,11 @@ public class GameManager : MonoBehaviour {
         gameOverPanel.SetActive(true);
     }
     private void HandlePlayerWins() {
+        enemyManager.onPlayerWin_EnemyManager();
+        boardManager.onPlayerWin_BoardManager();
+        playerManager.onPlayerWin_PlayerManager();
+
+        // PerkManager might activate PerkSelectionPanel
         perkSelectPanel.SetActive(true);
     }
 

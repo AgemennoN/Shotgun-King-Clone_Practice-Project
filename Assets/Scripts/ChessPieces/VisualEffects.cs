@@ -173,4 +173,33 @@ public class VisualEffects : MonoBehaviour {
         spriteRenderer.color = endColor;
     }
 
+
+
+    public void DestroyAnimation_Ascend() {
+        StartCoroutine(DestroyAnimation_AscendRoutine());
+    }
+
+    private IEnumerator DestroyAnimation_AscendRoutine(float duration = 0.5f) {
+        float elapsed = 0f;
+        Vector3 startPos = spriteRenderer.transform.localPosition;
+        Vector3 endPos = startPos + new Vector3(0, 2.5f, 0);
+
+        Color startColor = spriteRenderer.color;
+        Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0); ;
+
+        // Smoothly move down and fade in
+        while (elapsed < duration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            t = Mathf.SmoothStep(0, 1, t); // ease in-out curve
+
+            spriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, t);
+            spriteRenderer.color = Color.Lerp(startColor, endColor, t);
+
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
+
 }

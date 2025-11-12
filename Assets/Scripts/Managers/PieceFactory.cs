@@ -24,11 +24,7 @@ public class PieceFactory : MonoBehaviour {
 
         GameObject obj = Instantiate(prefab,parent.transform);
         ChessPiece piece = obj.GetComponent<ChessPiece>();
-        if (piece == null) {
-            Debug.LogError("Prefab does not contain a ChessPiece component.");
-            Destroy(obj);
-            return null;
-        }
+
         piece.SetPosition(board[x,y]);
         return obj;
     }

@@ -50,12 +50,15 @@ public class BoardManager : MonoBehaviour {
         return Board[x, y].GetPiece() == null;
     }
 
-    private void DestroyBoard() {
+    private void DestroyBoard(bool withAnimation=false) {
         if (Board != null) {
             // destroy old tiles
-            foreach (BoardTile tile in Board)
-                if (tile != null)
-                    Destroy(tile.gameObject);
+            foreach (BoardTile tile in Board) {
+                if (tile != null) {
+                    if (!withAnimation) Destroy(tile.gameObject);
+                    else tile.DestroyTileWithAnimation(UnityEngine.Random.Range(0.3f, 1.5f));
+                }
+            }
             Board = null;
         }
     }
@@ -84,6 +87,10 @@ public class BoardManager : MonoBehaviour {
         }
 
         return closest;
+    }
+
+    public void onPlayerWin_BoardManager() {
+        DestroyBoard(true);
     }
 
     private void OnDestroy() {

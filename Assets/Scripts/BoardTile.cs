@@ -93,4 +93,33 @@ public class BoardTile : MonoBehaviour {
         spriteRenderer.color = targetColor;
     }
 
+    public void DestroyTileWithAnimation(float startDelay) {
+        StartCoroutine(DestroyTileWithAnimationRoutine(startDelay));
+    }
+
+    public IEnumerator DestroyTileWithAnimationRoutine(float startDelay) {
+        yield return new WaitForSeconds(startDelay);
+
+        float duration = 1f;
+        Vector3 startPos = spriteRenderer.transform.localPosition;
+        Vector3 endPos = startPos + new Vector3(0, -2.5f, 0);
+
+        Color startColor = spriteRenderer.color;
+        Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0);
+
+        float elapsed = 0f;
+        while (elapsed < duration) {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            t = Mathf.SmoothStep(0, 1, t); // ease in-out curve
+
+            spriteRenderer.transform.localPosition = Vector3.Lerp(startPos, endPos, t);
+            spriteRenderer.color = Color.Lerp(startColor, endColor, t);
+
+            yield return null;
+        }
+        Destroy(gameObject);
+    }
+
+
 }

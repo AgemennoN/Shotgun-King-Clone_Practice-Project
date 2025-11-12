@@ -92,7 +92,7 @@ public class EnemyManager : MonoBehaviour {
 
     private bool IsEnemyKingAliveControl() {
         if (enemyDict[EnemyType.King].Count > 0) return true;
-        KillAllEnemies();
+        onEnemyKingsDie?.Invoke();
         return false;
     }
 
@@ -116,7 +116,6 @@ public class EnemyManager : MonoBehaviour {
             enemy.Die();
             yield return new WaitForSeconds(timeBetweenDeath);
         }
-        onEnemyKingsDie?.Invoke();
     }
 
 
@@ -235,6 +234,10 @@ public class EnemyManager : MonoBehaviour {
 
         VisualEffects visualEffects = newPiece.GetComponent<VisualEffects>();
         visualEffects.SpriteFadeInAnimation(Pawn.PromotionDuration, true);
+    }
+
+    public void onPlayerWin_EnemyManager() {
+        KillAllEnemies();
     }
 
     private void OnDisable() {

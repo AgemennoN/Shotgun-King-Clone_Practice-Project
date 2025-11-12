@@ -183,9 +183,6 @@ public class PlayerManager : MonoBehaviour {
         shieldChargesRemaining--;
     }
 
-    public void CapturedByEnemyAnimation() {
-        playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.captureMovementDuration);
-    }
 
     public bool CanHarvestSoul() {
         for (int i = 0; i < soulTypeSOList.Count; i++) {
@@ -281,6 +278,19 @@ public class PlayerManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Alpha3)) {
             ExitSoulMode();
         }
-
     }
+
+
+    public void CapturedByEnemyAnimation() {
+        playerPiece.visualEffects.SpriteFadeOutAnimation(ChessPiece.captureMovementDuration);
+    }
+
+    public void onPlayerWin_PlayerManager() {
+        DestroyPlayerPiece();
+    }
+
+    private void DestroyPlayerPiece() {
+        playerPiece.visualEffects.DestroyAnimation_Ascend();
+    }
+
 }
