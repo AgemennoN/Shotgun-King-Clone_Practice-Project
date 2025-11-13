@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Knight
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTypeSO
   enemyType: 1
-  maxHealth: 3
+  maxHealth: 1
   speed: 2
+  sprite: {fileID: 0}
   movementPatterns:
   - direction: {x: 2, y: 1}
     movementType: 2

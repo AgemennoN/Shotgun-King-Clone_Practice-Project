@@ -72,7 +72,8 @@ public class EnemyManager : MonoBehaviour {
 
         if (checkingEnemies.Count > 0) {
             // Randomly one of the checking pieces captures the king
-            checkingEnemies[UnityEngine.Random.Range(0, checkingEnemies.Count)].CapturePlayer();
+            int randomIndex = UnityEngine.Random.Range(0, checkingEnemies.Count);
+            checkingEnemies[randomIndex].CapturePlayer();
             return true;
         }
         return false;
@@ -240,6 +241,10 @@ public class EnemyManager : MonoBehaviour {
 
     public IEnumerator onPlayerWin_EnemyManager() {
         yield return StartCoroutine(KillAllEnemiesRoutine(0.2f));
+    }
+
+    public static void ResetStaticVariablesOnDefeat() {
+        enemyDictToCreate = null; // TO DO: Should I clean the dictionary
     }
 
     private void OnDisable() {

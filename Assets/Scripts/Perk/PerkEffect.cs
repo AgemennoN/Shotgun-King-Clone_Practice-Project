@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class PerkEffect
-{
+public class PerkEffect {
     public PerkEffectType PerkEffectType;
 }
 

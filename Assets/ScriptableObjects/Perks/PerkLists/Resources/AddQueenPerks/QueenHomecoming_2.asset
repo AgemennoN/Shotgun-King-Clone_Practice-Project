@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b11cd579f761cc4a81b530d6cc58ee4, type: 3}
-  m_Name: QueenHomecoming
+  m_Name: QueenHomecoming_2
   m_EditorClassIdentifier: Assembly-CSharp::PerkCardSO
   title: Queen Homecoming
-  description: 
+  description: Ye Yo Bitchess Add 1 Queen
   sprite: {fileID: 0}
   perkEffectList:
   - rid: 8843858266994770039

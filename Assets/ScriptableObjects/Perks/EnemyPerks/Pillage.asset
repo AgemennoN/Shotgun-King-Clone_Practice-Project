@@ -19,7 +19,7 @@ MonoBehaviour:
   - rid: 8843858266994770039
   - rid: 8843858266994770040
   - rid: 8843858266994770041
-  reSelectable: 0
+  reSelectable: 1
   references:
     version: 2
     RefIds:

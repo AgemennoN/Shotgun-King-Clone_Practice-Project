@@ -10,25 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b11cd579f761cc4a81b530d6cc58ee4, type: 3}
-  m_Name: Blunderbuss
+  m_Name: QueenHomecoming_1
   m_EditorClassIdentifier: Assembly-CSharp::PerkCardSO
-  title: Blunderbuss
-  description: +2 firePower, 30 fireARc
+  title: Queen Homecoming
+  description: You can't run from Queen, Add 1 Queen
   sprite: {fileID: 0}
   perkEffectList:
-  - rid: 8843858266994770036
-  - rid: 8843858266994770038
-  reSelectable: 1
+  - rid: 8843858266994770039
+  reSelectable: 0
   references:
     version: 2
     RefIds:
-    - rid: 8843858266994770036
-      type: {class: PerkEffect_Weapon, ns: , asm: Assembly-CSharp}
+    - rid: 8843858266994770039
+      type: {class: PerkEffect_Enemy, ns: , asm: Assembly-CSharp}
       data:
-        PerkEffectType: 7
-        effectAmount: 2
-    - rid: 8843858266994770038
-      type: {class: PerkEffect_Weapon, ns: , asm: Assembly-CSharp}
-      data:
-        PerkEffectType: 9
-        effectAmount: 30
+        PerkEffectType: 0
+        effectedType: {fileID: 11400000, guid: db13996d5c1aa8944b77dec1d0b5df4c, type: 2}
+        effectAmount: 1
