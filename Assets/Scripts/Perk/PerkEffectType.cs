@@ -8,14 +8,15 @@ public enum PerkEffectType
 
     EnemyMovePattern,   //Handled in PerkEffect_Pattern
 
-    AmmoWeapon,
-    AmmoReserve,
-    AmmoRegen,
-    FirePower,
-    FireRange,
-    FireArc,
+    AmmoWeapon,         //Handled in PerkEffect_Weapon
+    AmmoReserve,        //Handled in PerkEffect_Weapon
+    AmmoRegen,          //Handled in PerkEffect_Weapon
+    FirePower,          //Handled in PerkEffect_Weapon
+    FireRange,          //Handled in PerkEffect_Weapon
+    FireArc,            //Handled in PerkEffect_Weapon
 
-    SoulSlot,
+    SoulSlot,           //Handled in PerkEffect_Soul
+    MoveAfterSoul,      //Handled in PerkEffect_Soul
 
-    
+
 }

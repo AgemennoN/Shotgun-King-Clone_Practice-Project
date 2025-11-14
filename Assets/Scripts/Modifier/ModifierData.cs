@@ -28,4 +28,26 @@ public class WeaponModifierData {
     public int magCapacityChange;         // Max shells loaded into weapon
     public int maxReserveAmmoChange;      // Max reserve shells player can carry
     public int reloadAmountChange;        // Shells loaded per reload action
+
+    public WeaponModifierData() {
+        firePowerChange = 0;
+        fireRangeChange = 0;
+        fireArcChange = 0;
+
+        magCapacityChange = 0;
+        maxReserveAmmoChange = 0;
+        reloadAmountChange = 0;
+    }
+}
+
+[System.Serializable]
+public class SoulModifierData {
+    public int soulSlotChange;
+    public bool moveAfterSoulUsageEnable;
+    public static readonly int soulSlotDefault = 1;
+
+    public SoulModifierData() {
+        soulSlotChange = 0;
+        moveAfterSoulUsageEnable = false;
+    }
 }

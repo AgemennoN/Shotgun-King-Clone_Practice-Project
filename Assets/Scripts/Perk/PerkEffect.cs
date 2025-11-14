@@ -42,4 +42,7 @@ public class PerkEffect_Weapon : PerkEffect {
 [System.Serializable]
 public class PerkEffect_Soul : PerkEffect {
     public int effectAmount;
+    public override void ApplyEffect(PerkManager perkManager) {
+        perkManager.Apply_SoulEffect(perkEffectType, effectAmount);
+    }
 }

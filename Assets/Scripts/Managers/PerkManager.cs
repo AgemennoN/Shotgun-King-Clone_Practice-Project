@@ -20,6 +20,7 @@ public class PerkManager : MonoBehaviour {
     private Dictionary<EnemyType, EnemyModifierData> enemyModifierDictionary;
     private Dictionary<EnemyType, int> enemySpawnModificationDict;
     private WeaponModifierData weaponModifierData;
+    private SoulModifierData soulModifierData;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -32,6 +33,7 @@ public class PerkManager : MonoBehaviour {
         enemyModifierDictionary = new Dictionary<EnemyType, EnemyModifierData>();
         enemySpawnModificationDict =  new Dictionary<EnemyType, int>();
         weaponModifierData = null;
+        soulModifierData = null;
     }
 
 
@@ -182,6 +184,22 @@ public class PerkManager : MonoBehaviour {
         }
     }
 
+    internal void Apply_SoulEffect(PerkEffectType perkEffectType, int effectAmount) {
+        if (soulModifierData == null)
+            soulModifierData = new SoulModifierData();
+
+        switch (perkEffectType) {
+            case PerkEffectType.SoulSlot:
+                soulModifierData.soulSlotChange += effectAmount;
+                break;
+            case PerkEffectType.MoveAfterSoul:
+                soulModifierData.moveAfterSoulUsageEnable = true;
+                break;
+            default:
+                break;
+        }
+    }
+
     private List<PerkCardSO> GetAvailablePlayerPerkListFromResource() {
         PerkCardListSO perkListSO = Resources.Load<PerkCardListSO>("PerkList/PlayerPerksList");
         return new List<PerkCardSO>(perkListSO.perkList);
@@ -215,6 +233,10 @@ public class PerkManager : MonoBehaviour {
         return weaponModifierData;
     }
 
+    public SoulModifierData GetSoulModifierData() {
+        return soulModifierData;
+    }
+
     public static void ResetStaticVariablesOnDefeat() {
         //Instance = null;
         //PlayerPerks = null;
@@ -229,6 +251,5 @@ public class PerkManager : MonoBehaviour {
 
     private void OnDisable() {
     }
-
 
 }

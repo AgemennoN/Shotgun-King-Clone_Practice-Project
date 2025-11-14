@@ -13,8 +13,5 @@ MonoBehaviour:
   m_Name: PlayerPerksList
   m_EditorClassIdentifier: Assembly-CSharp::PerkCardListSO
   perkList:
-  - {fileID: 11400000, guid: a0828edff2272414091ebc18a743529d, type: 2}
   - {fileID: 11400000, guid: 1111b4ee5c6973a4f87f5286584ad40f, type: 2}
-  - {fileID: 11400000, guid: 15ed77ed9b0a50b48980ff0f09aa3242, type: 2}
-  - {fileID: 11400000, guid: 6ed9f149cad15404d9cbcbfd71a97aae, type: 2}
-  - {fileID: 11400000, guid: 3af108a2c5343b14ab9afc5d2036244a, type: 2}
+  - {fileID: 11400000, guid: 5b6ed2042e0b96e4ebb9ca058c364926, type: 2}

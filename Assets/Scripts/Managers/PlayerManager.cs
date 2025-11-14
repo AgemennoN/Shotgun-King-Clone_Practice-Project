@@ -23,10 +23,11 @@ public class PlayerManager : MonoBehaviour {
     private int shieldChargesRemaining;
 
     // Soul Mod Settings
-    private static int soulSlot = 2;
-    private static List<EnemyTypeSO> soulTypeSOList = new List<EnemyTypeSO>();
-    [SerializeField] private bool soulModeEnabled = false;
-    [SerializeField] private EnemyTypeSO selectedSoul = null;
+    private int soulSlotNumber = 1;
+    private List<EnemyTypeSO> soulTypeSOList;
+    [SerializeField] private bool soulModeEnabled;
+    [SerializeField] private EnemyTypeSO selectedSoul;
+    [SerializeField] private bool endTurnAfterSoul_perkEffect;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -50,7 +51,11 @@ public class PlayerManager : MonoBehaviour {
     }
 
     private void InitializeSouls() {
-        while (soulTypeSOList.Count < soulSlot) {
+        soulModeEnabled = false;
+        selectedSoul = null;
+        endTurnAfterSoul_perkEffect = true;
+        soulTypeSOList = new List<EnemyTypeSO>();
+        while (soulTypeSOList.Count < soulSlotNumber) {
             soulTypeSOList.Add(null);
         }
     }
@@ -92,7 +97,6 @@ public class PlayerManager : MonoBehaviour {
             if (soulModeEnabled == false) {
                 if (playerAvailableMoves.Contains(tile)) {
                     if (IsActionApprovedByShieldProtection(tile)) {
-                        arrowIndicator.Hide();
                         MakeKingMovementTo(tile);
                         weapon.Reload(); // Reload logic done inside weapon
                     }
@@ -105,30 +109,31 @@ public class PlayerManager : MonoBehaviour {
                 }
             } else { // SOUL MOVEMENT
                 if (playerAvailableMoves.Contains(tile)) {
-                    arrowIndicator.Hide();
-                    MakeSoulMovementTo(tile);
-                    weapon.Reload(); // Reload logic done inside weapon
-
+                    if(endTurnAfterSoul_perkEffect == false) {
+                        MakeSoulMovementTo(tile);
+                    }else if (IsActionApprovedByShieldProtection(tile)) {
+                        MakeSoulMovementTo(tile);
+                        weapon.Reload();
+                    }
                 }
-
             }
         }
-
     }
 
     private void MakeKingMovementTo(BoardTile tile) {
+        arrowIndicator.Hide();
         playerPiece.MoveToPosition(tile);
+
         StartCoroutine(TurnManager.Instance.StartActionPhase(true));        // When all the registered coroutines end, End Turn
     }
 
     private void MakeSoulMovementTo(BoardTile tile) {
+        arrowIndicator.Hide();
         playerPiece.MoveToPosition(tile);
-
-        bool perk_EndTurnWithSoul = false;
-        StartCoroutine(TurnManager.Instance.StartActionPhase(perk_EndTurnWithSoul));        // When all the registered coroutines end, End Turn
 
         SpendSoul();
         ExitSoulMode();
+        StartCoroutine(TurnManager.Instance.StartActionPhase(endTurnAfterSoul_perkEffect));
     }
 
     private Coroutine SpawnPlayer() {
@@ -183,7 +188,6 @@ public class PlayerManager : MonoBehaviour {
         shieldChargesRemaining--;
     }
 
-
     public bool CanHarvestSoul() {
         for (int i = 0; i < soulTypeSOList.Count; i++) {
             if (soulTypeSOList[i] == null) {
@@ -212,8 +216,10 @@ public class PlayerManager : MonoBehaviour {
 
     public void EnterSoulMode(EnemyTypeSO selectedSoul) {
         ExitSoulMode();
+        if (selectedSoul == null)
+            return;
         // TO DO: Change SPRITE Animation
-        if (selectedSoul == null) return;
+
         this.selectedSoul = selectedSoul;
 
         soulModeEnabled = true;
@@ -225,9 +231,9 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public void ExitSoulMode() {
-        // TO DO: Change SPRITE Animation
         if (selectedSoul == null)
             return;
+        // TO DO: Change SPRITE Animation
 
         Debug.Log("ExitSoulMode");
 
@@ -251,13 +257,26 @@ public class PlayerManager : MonoBehaviour {
         soulTypeSOList[soulTypeSOList.Count - 1] = null;
     }
 
+    private void ApplySoulModification(SoulModifierData soulModifierData) {
+        if (soulModifierData == null) return;
+        if (soulModifierData.moveAfterSoulUsageEnable) endTurnAfterSoul_perkEffect = false;
+
+        int newSoulSlotNumber = SoulModifierData.soulSlotDefault + soulModifierData.soulSlotChange;
+        
+        soulSlotNumber = Math.Max(0, newSoulSlotNumber);
+        if (soulTypeSOList.Count > soulSlotNumber) { // If list has more than new size, trim
+            soulTypeSOList.RemoveRange(soulSlotNumber, soulTypeSOList.Count - soulSlotNumber);
+        }
+        while (soulTypeSOList.Count < soulSlotNumber)
+            soulTypeSOList.Add(null);
+    }
+
     private void EndTurn() {
         turnManager.EndPlayerTurn();
     }
 
     public static void ResetStaticVariablesOnDefeat() {
-        soulSlot = 2;
-        soulTypeSOList = new List<EnemyTypeSO>();
+        // TO DO: Do I have any static left?
     }
 
     private void OnGUI() { // To Do: DEBUG Delete Later
@@ -281,6 +300,7 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public IEnumerator NewFloorPreparation() {
+        ApplySoulModification(perkManager.GetSoulModifierData());
         yield return SpawnPlayer();
 
     }
