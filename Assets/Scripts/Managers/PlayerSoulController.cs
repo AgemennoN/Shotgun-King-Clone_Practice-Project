@@ -78,6 +78,8 @@ public class PlayerSoulController : MonoBehaviour {
     }
 
     public void OnSlotClicked(SoulSlot slot) {
+        if (TurnManager.Instance.IsPlayerTurn() == false) return;
+
         if (activeSoulSlot == slot) {   // Toggle by clicking same soul
             DeselectCurrent();
             return;
