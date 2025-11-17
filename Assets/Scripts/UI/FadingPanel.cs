@@ -18,11 +18,8 @@ public class FadingPanel : MonoBehaviour {
         }
     }
 
-    private void OnEnable() {
-        //FadeIn(1f);
-    }
-
     public Coroutine FadeIn(float duration = 0.5f) {
+        gameObject.SetActive(true);
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         fadeRoutine = StartCoroutine(FadeRoutine(0f, 1f, duration));
         return fadeRoutine;

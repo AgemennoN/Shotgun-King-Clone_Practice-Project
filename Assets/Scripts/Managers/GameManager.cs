@@ -17,10 +17,7 @@ public class GameManager : MonoBehaviour {
     private TurnManager turnManager;
     private InformationUI informationUI;
 
-    [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private GameObject perkSelectPanel;
-
-
+    [SerializeField] private FadingPanel gameOverPanel;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -78,7 +75,7 @@ public class GameManager : MonoBehaviour {
 
     private void HandleEnemyWins() {
         // GameManager.OnDefeat_ResetStaticsAllManagers();
-        gameOverPanel.SetActive(true);
+        gameOverPanel.FadeIn();
     }
 
     public void OnPlayAgainButton() {

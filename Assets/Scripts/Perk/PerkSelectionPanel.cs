@@ -26,7 +26,7 @@ public class PerkSelectionPanel : MonoBehaviour {
     }
 
     public IEnumerator FadeOut(float duration = 0.5f) {
-        gameObject.SetActive(true);
+        gameObject.SetActive(false);
         fadingPanel ??= gameObject.AddComponent<FadingPanel>();
         yield return fadingPanel.FadeOut(duration);
     }
