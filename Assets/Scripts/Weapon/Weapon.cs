@@ -79,15 +79,6 @@ public abstract class Weapon : MonoBehaviour
 
     }
 
-    public void PrintWeaponInfo() {
-        Debug.Log($"Mag:{currentMag}/{weaponData.magCapacity}, Reserve:{currentReserveAmmo}/{weaponData.maxReserveAmmo}");
-    }
-
-    private void OnGUI() { // To Do: DEBUG Delete Later
-        GUI.Label(new Rect(10, 20, 300, 20), $"Mag: {currentMag}/{weaponData.magCapacity}");
-        GUI.Label(new Rect(10, 40, 300, 20), $"Reserve: {currentReserveAmmo}/{weaponData.maxReserveAmmo}");
-    }
-
     internal static void ApplyWeaponModifier(Weapon weapon, WeaponModifierData weaponModifierData) {
         weapon.weaponData = Instantiate(weapon.baseWeaponData);
         if (weaponModifierData != null) {

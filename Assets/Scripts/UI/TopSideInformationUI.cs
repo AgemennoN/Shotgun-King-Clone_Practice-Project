@@ -4,21 +4,31 @@ using UnityEngine;
 public class TopSideInformationUI : MonoBehaviour {
 
     private Weapon weapon;
+    private PlayerManager playerManager;
 
     [SerializeField] private Transform magTransform;
     [SerializeField] private Transform reserveBeltTransform;
+    [SerializeField] private Transform shieldsTransform;
 
     [SerializeField] private Sprite ammoSprite;
     [SerializeField] private Sprite emptyAmmoSprite;
 
-    [SerializeField] private Sprite shieldSprite; // later
-    [SerializeField] private Sprite emptyShieldSprite; //later
+    [SerializeField] private Sprite shieldSprite;
+    [SerializeField] private Sprite emptyShieldSprite;
 
     private List<AmmoUI> magAmmoPool;
     private List<AmmoUI> reserveAmmoPool;
     private int magCapacity;
     private int maxReserveAmmo;
 
+    private int shieldChargesLimit = 2;
+    private List<ShieldUI> shieldPool;
+
+    private void Start() {
+        playerManager = PlayerManager.Instance;
+        playerManager.onShieldProtection += ShieldProtectionAnimation;
+        CreateShieldPool();
+    }
 
     private void ShootAnimation(int currentMag) {
         for (int i = 0; i < magAmmoPool.Count; i++) {
@@ -39,6 +49,20 @@ public class TopSideInformationUI : MonoBehaviour {
             reserveAmmoPool[i].SetFilled(i < currentReserve);
     }
 
+    private void ShieldProtectionAnimation(int shieldRemaining) {
+        for (int i = 0; i < shieldPool.Count; i++) {
+            bool filled = i < shieldRemaining;
+            shieldPool[i].SetFilled(filled);
+        }
+    }
+
+    private void CreateShieldPool() {
+        shieldPool = new();
+        for (int i = 0; i < shieldChargesLimit; i++) {
+            shieldPool.Add(ShieldUI.Create(shieldsTransform, shieldSprite, emptyShieldSprite));
+        }
+    }
+
     private void GetWeaponFromPlayerManager() {
         weapon = PlayerManager.Instance.GetWeapon();
         weapon.OnShoot += ShootAnimation;
@@ -48,10 +72,10 @@ public class TopSideInformationUI : MonoBehaviour {
         WeaponDataSO weaponData = weapon.GetWeaponData();
         magCapacity = weaponData.magCapacity;
         maxReserveAmmo = weaponData.maxReserveAmmo;
-        CreatePools();
+        CreateAmmoPools();
     }
 
-    private void CreatePools() {
+    private void CreateAmmoPools() {
         magAmmoPool = new();
         for (int i = 0; i < magCapacity; i++) {
             magAmmoPool.Add(AmmoUI.Create(magTransform, ammoSprite, emptyAmmoSprite));
@@ -62,7 +86,7 @@ public class TopSideInformationUI : MonoBehaviour {
         }
     }
 
-    private void ResetPools() {
+    private void ResetAmmoPools() {
         foreach (AmmoUI ui in magAmmoPool) {
             Destroy(ui.gameObject);
         }
@@ -83,7 +107,12 @@ public class TopSideInformationUI : MonoBehaviour {
         weapon.OnReloadMag -= ReloadMagAnimation;
         weapon.OnRegenerateReserve -= RegenerateReserveAnimation;
         weapon = null;
-        ResetPools();
+        ResetAmmoPools();
         gameObject.SetActive(false);
     }
+
+    private void OnDestroy() {
+        playerManager.onShieldProtection -= ShieldProtectionAnimation;
+    }
+
 }

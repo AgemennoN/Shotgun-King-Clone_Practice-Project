@@ -22,6 +22,7 @@ public class PlayerManager : MonoBehaviour {
 
     private int shieldChargesLimit = 2;  // Number of times the player is protected from moving onto a threatened tile.
     private int shieldChargesRemaining;
+    public Action<int> onShieldProtection;
 
     // Soul Mod Settings
     [SerializeField] private bool soulModeEnabled;
@@ -179,11 +180,13 @@ public class PlayerManager : MonoBehaviour {
     private void RestoreShieldCharges() {
         // TO DO: There should be an UI to track this
         shieldChargesRemaining = shieldChargesLimit;
+        onShieldProtection?.Invoke(shieldChargesLimit);
     }
 
     private void DecreaseShieldCharge() {
         // TO DO: There should be an UI to track this
         shieldChargesRemaining--;
+        onShieldProtection?.Invoke(shieldChargesRemaining);
     }
 
     public void EnterSoulMode(EnemyTypeSO selectedSoul) {
@@ -217,11 +220,6 @@ public class PlayerManager : MonoBehaviour {
     public static void ResetStaticVariablesOnDefeat() {
         // TO DO: Do I have any static left?
     }
-
-    private void OnGUI() { // To Do: DEBUG Delete Later
-        GUI.Label(new Rect(10, 70, 300, 20), $"Shield: {shieldChargesRemaining}/{shieldChargesLimit}");
-    }
-
 
     public IEnumerator NewFloorPreparation() {
         yield return SpawnPlayer();
